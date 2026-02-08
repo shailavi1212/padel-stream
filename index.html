@@ -3,618 +3,901 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PADEL LIVE — Match Broadcast</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏓</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>PADEL LIVE — Admin Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
 :root {
-  --bg-primary: #06090f;
-  --bg-secondary: #0b1120;
-  --bg-glass: rgba(12, 18, 40, 0.55);
-  --neon-cyan: #00e5ff;
-  --neon-purple: #b44aff;
-  --neon-green: #00ff88;
-  --neon-pink: #ff2d78;
-  --neon-orange: #ff8c00;
-  --neon-yellow: #ffe600;
-  --text-primary: #e4eaf4;
-  --text-secondary: #7889a8;
-  --text-muted: #3a4860;
-  --border-glow: rgba(0, 229, 255, 0.12);
-  --border-subtle: rgba(255, 255, 255, 0.05);
-  --font-display: 'Orbitron', monospace;
-  --font-body: 'Rajdhani', sans-serif;
-  --font-mono: 'Share Tech Mono', monospace;
-  --header-height: 60px;
-  --radius: 8px;
-  --radius-lg: 12px;
+  --bg-deep: #050810;
+  --bg-primary: #0b0f1a;
+  --bg-secondary: #111827;
+  --bg-card: rgba(15, 20, 35, 0.9);
+  --bg-input: rgba(10, 14, 26, 0.8);
+
+  --neon-cyan: #00f0ff;
+  --neon-purple: #a855f7;
+  --neon-pink: #f472b6;
+  --neon-green: #22d3ee;
+  --neon-yellow: #fbbf24;
+  --neon-red: #ef4444;
+
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-bright: #ffffff;
+
+  --radius: 6px;
+  --radius-lg: 10px;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; scroll-behavior: smooth; }
-body {
-  font-family: var(--font-body); background: var(--bg-primary);
-  color: var(--text-primary); min-height: 100vh; overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
+
+html, body {
+  min-height: 100vh;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'Rajdhani', sans-serif;
 }
+
 body::before {
-  content: ''; position: fixed; inset: 0;
-  background: linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
-  background-size: 50px 50px; pointer-events: none; z-index: 0;
-}
-body::after {
-  content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
-  background: radial-gradient(ellipse at 25% 15%, rgba(0,229,255,0.04) 0%, transparent 55%),
-              radial-gradient(ellipse at 75% 85%, rgba(180,74,255,0.035) 0%, transparent 55%);
-  pointer-events: none; z-index: 0;
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 90%, rgba(0, 240, 255, 0.05) 0%, transparent 50%);
+  z-index: -1;
 }
 
-/* HEADER */
-.header {
-  position: sticky; top: 0; z-index: 100; height: var(--header-height);
-  display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
-  background: rgba(6,9,15,0.94); backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-glow);
-  box-shadow: 0 4px 30px rgba(0,0,0,0.5), 0 1px 0 rgba(0,229,255,0.08);
-}
-.header-left { display: flex; align-items: center; gap: 14px; }
-.logo-icon {
-  width: 36px; height: 36px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-weight: 900; font-size: 14px; color: #fff;
-  text-shadow: 0 0 10px rgba(255,255,255,0.5); box-shadow: 0 0 18px rgba(0,229,255,0.3);
-}
-.league-name {
-  font-family: var(--font-display); font-size: 1rem; font-weight: 700;
-  letter-spacing: 3px; text-transform: uppercase;
-  background: linear-gradient(90deg, var(--neon-cyan), var(--text-primary));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.league-subtitle { font-size: 0.65rem; color: var(--text-secondary); letter-spacing: 2px; text-transform: uppercase; }
-.header-center { display: flex; gap: 4px; }
-.nav-tab {
-  font-family: var(--font-display); font-size: 0.6rem; letter-spacing: 2px;
-  text-transform: uppercase; padding: 7px 16px; background: transparent;
-  border: 1px solid transparent; border-radius: 6px; color: var(--text-secondary);
-  cursor: pointer; transition: all 0.3s;
-}
-.nav-tab:hover { color: var(--neon-cyan); border-color: rgba(0,229,255,0.2); background: rgba(0,229,255,0.04); }
-.nav-tab.active { color: var(--neon-cyan); border-color: rgba(0,229,255,0.3); background: rgba(0,229,255,0.07); }
-.header-right { display: flex; align-items: center; gap: 12px; }
-.live-badge {
-  display: flex; align-items: center; gap: 7px; padding: 5px 12px;
-  border-radius: 20px; background: rgba(255,45,120,0.1); border: 1px solid rgba(255,45,120,0.3);
-}
-.live-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--neon-pink);
-  box-shadow: 0 0 8px var(--neon-pink); animation: livePulse 1.5s ease-in-out infinite;
-}
-@keyframes livePulse {
-  0%,100%{opacity:1;box-shadow:0 0 8px var(--neon-pink)}
-  50%{opacity:0.35;box-shadow:0 0 20px var(--neon-pink),0 0 40px var(--neon-pink)}
-}
-.live-text { font-family: var(--font-display); font-size: 0.6rem; font-weight: 700; letter-spacing: 3px; color: var(--neon-pink); }
-.live-badge.offline .live-dot { background: var(--text-muted); box-shadow: none; animation: none; }
-.live-badge.offline .live-text { color: var(--text-muted); }
-.live-badge.offline { background: rgba(255,255,255,0.03); border-color: var(--border-subtle); }
-.sync-indicator {
-  font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-muted);
-  display: flex; align-items: center; gap: 5px; transition: color 0.3s;
-}
-.sync-indicator.syncing { color: var(--neon-cyan); }
-.sync-indicator.error { color: var(--neon-pink); }
-.sync-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--neon-green); transition: background 0.3s; }
-.sync-indicator.syncing .sync-dot { background: var(--neon-cyan); animation: syncPulse 0.8s ease-in-out infinite; }
-.sync-indicator.error .sync-dot { background: var(--neon-pink); }
-@keyframes syncPulse { 0%,100%{opacity:1}50%{opacity:0.3} }
-
-/* SPONSOR BAR */
-.sponsor-bar {
-  display: flex; align-items: center; justify-content: center; gap: 20px;
-  padding: 8px 20px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border-subtle);
-}
-.sponsor-label {
-  font-family: var(--font-display); font-size: 0.45rem; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--text-muted);
-}
-.sponsor-logos { display: flex; align-items: center; gap: 18px; }
-.sponsor-logo {
-  height: 32px; max-width: 110px; object-fit: contain; opacity: 0.75;
-  transition: opacity 0.3s; filter: brightness(1.2) grayscale(15%);
-}
-.sponsor-logo:hover { opacity: 1; }
-.sponsor-placeholder {
-  height: 32px; padding: 4px 14px; display: flex; align-items: center; justify-content: center;
-  border: 1px dashed rgba(0,229,255,0.15); border-radius: 6px;
-  font-family: var(--font-display); font-size: 0.5rem; letter-spacing: 2px;
-  color: var(--text-muted); text-transform: uppercase;
+/* ═══════ LOGIN SCREEN ═══════ */
+.login-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: opacity 0.4s, visibility 0.4s;
 }
 
-/* MAIN */
-.main-container { position: relative; z-index: 1; max-width: 1600px; margin: 0 auto; padding: 16px; }
-.layout-grid { display: grid; grid-template-columns: 280px 1fr 300px; gap: 16px; align-items: start; }
+.login-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-/* CARDS */
+.login-box {
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 40px 36px;
+  width: 360px;
+  max-width: 90%;
+  text-align: center;
+  backdrop-filter: blur(20px);
+}
+
+.login-box h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--neon-cyan);
+  margin-bottom: 6px;
+}
+
+.login-box p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-input);
+  border: 1px solid rgba(0, 240, 255, 0.12);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+  margin-bottom: 16px;
+  text-align: center;
+  letter-spacing: 3px;
+}
+
+.login-box input:focus { border-color: var(--neon-cyan); }
+
+.login-box input::placeholder {
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.login-error {
+  font-size: 13px;
+  color: var(--neon-red);
+  margin-bottom: 12px;
+  display: none;
+}
+
+.login-box button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(168, 85, 247, 0.15));
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: var(--radius);
+  color: var(--neon-cyan);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.login-box button:hover {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(168, 85, 247, 0.25));
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+/* ═══════ ADMIN DASHBOARD ═══════ */
+.admin-dashboard {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+  display: none;
+}
+
+.admin-dashboard.visible { display: block; }
+
+/* Header */
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.08);
+}
+
+.admin-header h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--neon-cyan);
+}
+
+.admin-header .status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--neon-green);
+  font-family: 'Space Mono', monospace;
+}
+
+.admin-header .status .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--neon-green);
+  border-radius: 50%;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Cards */
 .card {
-  background: var(--bg-glass); backdrop-filter: blur(16px);
-  border: 1px solid var(--border-glow); border-radius: var(--radius-lg);
-  overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s;
-  animation: fadeInUp 0.5s ease forwards;
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 240, 255, 0.08);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(10px);
 }
-.card:hover { border-color: rgba(0,229,255,0.22); box-shadow: 0 0 25px rgba(0,229,255,0.04); }
-@keyframes fadeInUp { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
-.card-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); background: rgba(0,0,0,0.2);
-}
-.card-title { font-family: var(--font-display); font-size: 0.55rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--neon-cyan); }
-.card-badge {
-  font-family: var(--font-mono); font-size: 0.6rem; padding: 2px 8px; border-radius: 4px;
-  background: rgba(0,229,255,0.08); color: var(--neon-cyan); border: 1px solid rgba(0,229,255,0.12);
-}
-.card-body { padding: 14px 16px; }
 
-/* LEFT */
-.match-info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.info-label { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-family: var(--font-display); }
-.info-value { font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; }
-.divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border-glow), transparent); margin: 14px 0; }
-.team-row {
-  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-  border-radius: var(--radius); background: rgba(0,0,0,0.2); margin-bottom: 6px;
-  border: 1px solid transparent; transition: all 0.3s;
+.card-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--neon-purple);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.team-row:hover { border-color: var(--border-glow); }
-.team-color { width: 3px; height: 32px; border-radius: 2px; }
-.team-a-color { background: var(--neon-cyan); box-shadow: 0 0 6px rgba(0,229,255,0.4); }
-.team-b-color { background: var(--neon-purple); box-shadow: 0 0 6px rgba(180,74,255,0.4); }
-.team-info { flex: 1; }
-.team-name-display { font-family: var(--font-display); font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; }
-.team-players { font-size: 0.72rem; color: var(--text-secondary); margin-top: 1px; }
 
-/* SCOREBOARD */
-.scoreboard { background: rgba(0,0,0,0.3); border-radius: var(--radius-lg); border: 1px solid rgba(0,229,255,0.08); overflow: hidden; }
-.score-header {
-  display: grid; grid-template-columns: 1fr repeat(4, 48px);
-  padding: 7px 12px; background: rgba(0,229,255,0.04); border-bottom: 1px solid var(--border-subtle);
+.card-title svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
 }
-.score-header span { font-family: var(--font-display); font-size: 0.5rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); text-align: center; }
-.score-header span:first-child { text-align: left; }
-.score-row {
-  display: grid; grid-template-columns: 1fr repeat(4, 48px);
-  padding: 9px 12px; align-items: center; border-bottom: 1px solid var(--border-subtle);
-}
-.score-row:last-child { border-bottom: none; }
-.score-team-name { font-family: var(--font-display); font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; }
-.score-team-name.team-a { color: var(--neon-cyan); }
-.score-team-name.team-b { color: var(--neon-purple); }
-.score-cell { display: flex; align-items: center; justify-content: center; }
-.score-value {
-  font-family: var(--font-mono); font-size: 1.05rem; font-weight: 700;
-  min-width: 26px; text-align: center; transition: all 0.3s; color: var(--text-primary);
-}
-.score-value.highlight { animation: scoreFlash 0.5s ease; }
-@keyframes scoreFlash { 0%{transform:scale(1)}30%{transform:scale(1.5);color:var(--neon-cyan);text-shadow:0 0 15px var(--neon-cyan)}100%{transform:scale(1)} }
-.score-value.serving { color: var(--neon-green); text-shadow: 0 0 8px rgba(0,255,136,0.4); }
 
-/* VIDEO */
-.video-section { min-width: 0; }
-.video-wrapper {
-  position: relative; width: 100%; padding-top: 56.25%; border-radius: var(--radius-lg);
-  overflow: hidden; border: 1px solid rgba(0,229,255,0.12);
-  box-shadow: 0 0 50px rgba(0,0,0,0.6), 0 0 80px rgba(0,229,255,0.04); background: #000;
+/* Form elements */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
 }
-.video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-.video-wrapper::before {
-  content: ''; position: absolute; z-index: 2; pointer-events: none;
-  top: 0; left: 0; width: 36px; height: 36px;
-  border-top: 2px solid var(--neon-cyan); border-left: 2px solid var(--neon-cyan);
-}
-.video-wrapper::after {
-  content: ''; position: absolute; z-index: 2; pointer-events: none;
-  bottom: 0; right: 0; width: 36px; height: 36px;
-  border-bottom: 2px solid var(--neon-purple); border-right: 2px solid var(--neon-purple);
-}
-.video-score-overlay {
-  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 3;
-  display: flex; align-items: center; background: rgba(6,9,15,0.92); backdrop-filter: blur(10px);
-  border-radius: 8px; border: 1px solid rgba(0,229,255,0.18); overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-}
-.overlay-team { padding: 7px 14px; display: flex; align-items: center; gap: 8px; }
-.overlay-team-name { font-family: var(--font-display); font-size: 0.55rem; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
-.overlay-score-box { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 700; min-width: 28px; text-align: center; }
-.overlay-vs { padding: 7px 5px; font-family: var(--font-display); font-size: 0.45rem; color: var(--text-muted); letter-spacing: 2px; background: rgba(0,0,0,0.3); }
 
-.highlights-card { margin-top: 14px; }
-.highlight-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); }
-.highlight-item:last-child { border-bottom: none; }
-.highlight-time { font-family: var(--font-mono); font-size: 0.65rem; color: var(--neon-cyan); white-space: nowrap; min-width: 36px; }
-.highlight-text { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; }
-.highlight-text strong { color: var(--text-primary); font-weight: 600; }
+.form-row.single {
+  grid-template-columns: 1fr;
+}
 
-/* STANDINGS */
-.standings-table { width: 100%; border-collapse: collapse; }
-.standings-table thead th {
-  font-family: var(--font-display); font-size: 0.48rem; letter-spacing: 2px;
-  text-transform: uppercase; color: var(--text-muted); padding: 7px 5px; text-align: center;
-  border-bottom: 1px solid var(--border-subtle); cursor: pointer; user-select: none;
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
-.standings-table thead th:first-child { text-align: left; padding-left: 10px; }
-.standings-table thead th:nth-child(2) { text-align: left; }
-.standings-table tbody tr { border-bottom: 1px solid var(--border-subtle); transition: all 0.3s; }
-.standings-table tbody tr:last-child { border-bottom: none; }
-.standings-table tbody tr:hover { background: rgba(0,229,255,0.025); }
-.standings-table tbody tr.playing {
-  background: rgba(0,229,255,0.05); border-left: 2px solid var(--neon-cyan);
-  animation: rowGlow 2s ease-in-out infinite;
-}
-@keyframes rowGlow { 0%,100%{box-shadow:inset 0 0 8px rgba(0,229,255,0.04)}50%{box-shadow:inset 0 0 16px rgba(0,229,255,0.08)} }
-.standings-table td { font-family: var(--font-mono); font-size: 0.7rem; padding: 8px 5px; text-align: center; color: var(--text-secondary); }
-.standings-table td:first-child { text-align: left; padding-left: 10px; }
-.standings-table td:nth-child(2) { text-align: left; }
-.rank-num { font-family: var(--font-display); font-weight: 700; font-size: 0.65rem; }
-.rank-1 { color: var(--neon-yellow); } .rank-2 { color: var(--text-primary); } .rank-3 { color: var(--neon-orange); }
-.team-cell { font-family: var(--font-body) !important; font-weight: 600; font-size: 0.76rem !important; color: var(--text-primary) !important; }
-.pts-cell { font-weight: 700; color: var(--neon-cyan) !important; font-size: 0.8rem; }
 
-.schedule-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px; background: rgba(0,0,0,0.2); border-radius: var(--radius);
-  margin-bottom: 6px; border: 1px solid var(--border-subtle);
+.form-group label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-family: 'Rajdhani', sans-serif;
 }
-.schedule-teams { font-family: var(--font-display); font-size: 0.65rem; font-weight: 600; letter-spacing: 1px; }
-.schedule-meta { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-secondary); }
-.schedule-status { font-family: var(--font-display); font-size: 0.5rem; letter-spacing: 2px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; }
-.status-live { background: rgba(255,45,120,0.12); color: var(--neon-pink); border: 1px solid rgba(255,45,120,0.25); }
-.status-upcoming { background: rgba(0,229,255,0.08); color: var(--neon-cyan); border: 1px solid rgba(0,229,255,0.15); }
-.status-done { background: rgba(255,255,255,0.03); color: var(--text-muted); border: 1px solid var(--border-subtle); }
 
-.footer { margin-top: 20px; padding: 16px; text-align: center; border-top: 1px solid var(--border-subtle); }
-.footer-text { font-family: var(--font-display); font-size: 0.5rem; letter-spacing: 3px; color: var(--text-muted); text-transform: uppercase; }
+.form-group input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-input);
+  border: 1px solid rgba(0, 240, 255, 0.08);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s;
+}
 
-/* MOBILE */
-.mobile-tabs {
-  display: none; gap: 4px; padding: 10px 16px; background: rgba(6,9,15,0.96);
-  backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glow);
-  position: sticky; top: var(--header-height); z-index: 90; overflow-x: auto;
-}
-.mobile-tab {
-  font-family: var(--font-display); font-size: 0.55rem; letter-spacing: 2px;
-  text-transform: uppercase; padding: 7px 14px; border-radius: 6px;
-  border: 1px solid transparent; background: transparent; color: var(--text-secondary);
-  cursor: pointer; white-space: nowrap; transition: all 0.3s;
-}
-.mobile-tab.active { color: var(--neon-cyan); border-color: rgba(0,229,255,0.3); background: rgba(0,229,255,0.07); }
+.form-group input:focus { border-color: var(--neon-cyan); }
 
-@media (max-width: 1200px) {
-  .layout-grid { grid-template-columns: 1fr; gap: 14px; }
-  .video-section { order: -1; } .left-panel { order: 1; } .right-panel { order: 2; }
-  .mobile-tabs { display: flex; } .header-center { display: none; }
-  .panel-section[data-section] { display: none; }
-  .panel-section[data-section].mobile-visible { display: block; }
+/* Score controls */
+.score-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
-@media (max-width: 640px) {
-  .header { padding: 0 10px; } .league-name { font-size: 0.75rem; }
-  .league-subtitle { display: none; } .main-container { padding: 10px; }
-  .video-score-overlay { display: none; }
-  .score-header { grid-template-columns: 1fr repeat(4, 38px); }
-  .score-row { grid-template-columns: 1fr repeat(4, 38px); }
-  .sponsor-bar { gap: 10px; padding: 6px 10px; }
-  .sponsor-logo, .sponsor-placeholder { height: 24px; }
+
+.score-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(0, 240, 255, 0.06);
 }
-::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: var(--bg-primary); }
-::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.15); border-radius: 3px; }
+
+.score-team.team-a { border-color: rgba(0, 240, 255, 0.12); }
+.score-team.team-b { border-color: rgba(168, 85, 247, 0.12); }
+
+.score-team-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+.score-team.team-a .score-team-label { color: var(--neon-cyan); }
+.score-team.team-b .score-team-label { color: var(--neon-purple); }
+
+.score-display {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 42px;
+  font-weight: 900;
+  color: var(--text-bright);
+  line-height: 1;
+  min-width: 60px;
+  text-align: center;
+}
+
+.score-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-score {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  background: rgba(0, 240, 255, 0.06);
+  color: var(--neon-cyan);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-score:hover {
+  background: rgba(0, 240, 255, 0.15);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+.btn-score.minus {
+  border-color: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.06);
+  color: var(--neon-red);
+}
+
+.btn-score.minus:hover {
+  background: rgba(239, 68, 68, 0.15);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+}
+
+/* Sets row */
+.sets-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 12px;
+}
+
+.sets-team {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.sets-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.sets-display {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--neon-green);
+  min-width: 30px;
+  text-align: center;
+}
+
+.btn-set {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(34, 211, 238, 0.15);
+  background: rgba(34, 211, 238, 0.06);
+  color: var(--neon-green);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-set:hover {
+  background: rgba(34, 211, 238, 0.15);
+}
+
+.btn-set.minus {
+  color: var(--neon-red);
+  border-color: rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.06);
+}
+
+/* Serve toggle */
+.serve-toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.serve-btn {
+  padding: 10px 24px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(251, 191, 36, 0.15);
+  background: rgba(251, 191, 36, 0.04);
+  color: var(--text-secondary);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.serve-btn.active {
+  border-color: var(--neon-yellow);
+  background: rgba(251, 191, 36, 0.12);
+  color: var(--neon-yellow);
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
+}
+
+.serve-btn:hover {
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.serve-icon {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  margin-right: 6px;
+  vertical-align: middle;
+  transition: background 0.3s;
+}
+
+.serve-btn.active .serve-icon {
+  background: var(--neon-yellow);
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+}
+
+.serve-switch-btn {
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(244, 114, 182, 0.2);
+  background: rgba(244, 114, 182, 0.06);
+  color: var(--neon-pink);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.serve-switch-btn:hover {
+  background: rgba(244, 114, 182, 0.15);
+  box-shadow: 0 0 15px rgba(244, 114, 182, 0.15);
+}
+
+/* Reset button */
+.reset-section {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-reset {
+  padding: 10px 28px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.06);
+  color: var(--neon-red);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-reset:hover {
+  background: rgba(239, 68, 68, 0.15);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+}
+
+/* Toast notification */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: rgba(15, 20, 35, 0.95);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: var(--radius);
+  padding: 12px 20px;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--neon-green);
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .admin-dashboard { padding: 12px 10px 40px; }
+  .form-row { grid-template-columns: 1fr; }
+  .score-controls { grid-template-columns: 1fr; gap: 12px; }
+  .sets-controls { grid-template-columns: 1fr; gap: 12px; }
+  .serve-toggle-container { flex-direction: column; gap: 10px; }
+  .score-display { font-size: 32px; }
+}
 </style>
 </head>
 <body>
 
-<header class="header">
-  <div class="header-left">
-    <div class="logo-icon">PL</div>
-    <div>
-      <div class="league-name" id="leagueName">PADEL LEAGUE Beer Sheva</div>
-      <div class="league-subtitle">Season 2026 — Broadcast</div>
-    </div>
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <h1>ADMIN</h1>
+    <p>Padel Live Broadcast Control</p>
+    <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="off">
+    <div class="login-error" id="loginError">Incorrect password</div>
+    <button onclick="attemptLogin()">Authenticate</button>
   </div>
-  <div class="header-center">
-    <button class="nav-tab active" data-tab="match" onclick="switchTab('match')">Live Match</button>
-    <button class="nav-tab" data-tab="standings" onclick="switchTab('standings')">Standings</button>
-    <button class="nav-tab" data-tab="schedule" onclick="switchTab('schedule')">Schedule</button>
-  </div>
-  <div class="header-right">
-    <div class="live-badge" id="liveBadge">
-      <div class="live-dot"></div>
-      <div class="live-text">LIVE</div>
-    </div>
-    <div class="sync-indicator" id="syncIndicator">
-      <div class="sync-dot"></div>
-      <span id="syncText">Synced</span>
-    </div>
-  </div>
-</header>
-
-<!-- SPONSOR BAR -->
-<div class="sponsor-bar">
-  <span class="sponsor-label">Sponsored by</span>
- <div class="sponsor-logos">
-  <a href="https://www.shir-ben.co.il/" target="_blank">
-    <img
-      class="sponsor-logo"
-      src="images/secondspons1.jpeg"
-      alt="Shir Ben">
-  </a>
-
-<a href="http://ron-holding.co.il/" target="_blank">
-    <img
-      class="sponsor-logo"
-      src="images/secondspons2.jpeg"
-      alt="ron-ahzakot">
-  </a>
-   <a href="https://tennis.org.il/" target="_blank">
-    <img
-      class="sponsor-logo"
-      src="images/spnosor3.png"
-      alt="Tennis-Center">
-  </a>
-
-</div></div>
-
-<div class="mobile-tabs">
-  <button class="mobile-tab active" data-mtab="match" onclick="switchMobileTab('match')">Live</button>
-  <button class="mobile-tab" data-mtab="details" onclick="switchMobileTab('details')">Info</button>
-  <button class="mobile-tab" data-mtab="standings" onclick="switchMobileTab('standings')">Standings</button>
-  <button class="mobile-tab" data-mtab="schedule" onclick="switchMobileTab('schedule')">Schedule</button>
 </div>
 
-<main class="main-container">
-  <div class="layout-grid">
-    <!-- LEFT -->
-    <div class="left-panel panel-section mobile-visible" data-section="details">
-      <div class="card" style="margin-bottom:14px">
-        <div class="card-header"><span class="card-title">Match Info</span><span class="card-badge" id="matchRoundBadge">—</span></div>
-        <div class="card-body">
-          <div class="match-info-row"><span class="info-label">Tournament</span><span class="info-value" id="vTournament">—</span></div>
-          <div class="match-info-row"><span class="info-label">Round</span><span class="info-value" id="vRound">—</span></div>
-          <div class="match-info-row"><span class="info-label">Court</span><span class="info-value" id="vCourt">—</span></div>
-          <div class="match-info-row"><span class="info-label">Format</span><span class="info-value">Best of 3 Sets</span></div>
-          <div class="divider"></div>
-          <div class="team-row">
-            <div class="team-color team-a-color"></div>
-            <div class="team-info"><div class="team-name-display" id="vTeamAName">—</div><div class="team-players" id="vPlayersA">—</div></div>
-          </div>
-          <div class="team-row">
-            <div class="team-color team-b-color"></div>
-            <div class="team-info"><div class="team-name-display" id="vTeamBName">—</div><div class="team-players" id="vPlayersB">—</div></div>
-          </div>
-        </div>
+<!-- ADMIN DASHBOARD -->
+<div class="admin-dashboard" id="adminDashboard">
+
+  <div class="admin-header">
+    <h1>⚡ BROADCAST CONTROL</h1>
+    <div class="status">
+      <span class="dot"></span>
+      Firebase Connected
+    </div>
+  </div>
+
+  <!-- TEAM NAMES -->
+  <div class="card">
+    <div class="card-title">
+      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      Teams & Players
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Team A Name</label>
+        <input type="text" id="teamAInput" placeholder="e.g. THUNDER" maxlength="20">
       </div>
-      <div class="card">
-        <div class="card-header"><span class="card-title">Scoreboard</span><span class="card-badge">LIVE</span></div>
-        <div class="scoreboard">
-          <div class="score-header"><span>Team</span><span>Set 1</span><span>Set 2</span><span>Set 3</span><span>PTS</span></div>
-          <div class="score-row">
-            <span class="score-team-name team-a" id="vScoreNameA">—</span>
-            <div class="score-cell"><span class="score-value" id="vs1a">-</span></div>
-            <div class="score-cell"><span class="score-value" id="vs2a">-</span></div>
-            <div class="score-cell"><span class="score-value" id="vs3a">-</span></div>
-            <div class="score-cell"><span class="score-value serving" id="vptA">0</span></div>
-          </div>
-          <div class="score-row">
-            <span class="score-team-name team-b" id="vScoreNameB">—</span>
-            <div class="score-cell"><span class="score-value" id="vs1b">-</span></div>
-            <div class="score-cell"><span class="score-value" id="vs2b">-</span></div>
-            <div class="score-cell"><span class="score-value" id="vs3b">-</span></div>
-            <div class="score-cell"><span class="score-value" id="vptB">0</span></div>
-          </div>
-        </div>
+      <div class="form-group">
+        <label>Team B Name</label>
+        <input type="text" id="teamBInput" placeholder="e.g. STORM" maxlength="20">
       </div>
     </div>
-
-    <!-- CENTER -->
-    <div class="video-section panel-section mobile-visible" data-section="match">
-      <div class="video-wrapper">
-        <iframe id="youtubePlayer" src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&rel=0"
-          allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
-        <div class="video-score-overlay">
-          <div class="overlay-team">
-            <span class="overlay-team-name" style="color:var(--neon-cyan)" id="vOverlayTeamA">—</span>
-            <span class="overlay-score-box" id="vOverlayScoreA">0</span>
-          </div>
-          <div class="overlay-vs">VS</div>
-          <div class="overlay-team">
-            <span class="overlay-score-box" id="vOverlayScoreB">0</span>
-            <span class="overlay-team-name" style="color:var(--neon-purple)" id="vOverlayTeamB">—</span>
-          </div>
-        </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Players A</label>
+        <input type="text" id="playersAInput" placeholder="e.g. García / López">
       </div>
-      <div class="card highlights-card">
-        <div class="card-header"><span class="card-title">Match Feed</span><span class="card-badge">LIVE</span></div>
-        <div class="card-body" id="highlightsFeed">
-          <div class="highlight-item"><span class="highlight-time">—</span><span class="highlight-text">Waiting for match data...</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT -->
-    <div class="right-panel panel-section mobile-visible" data-section="standings">
-      <div class="card">
-        <div class="card-header"><span class="card-title">League Standings</span><span class="card-badge">BY PTS</span></div>
-        <div class="card-body" style="padding:0">
-          <table class="standings-table">
-            <thead><tr><th>#</th><th>Team</th><th>MP</th><th>W</th><th>L</th><th>PTS</th><th>SD</th></tr></thead>
-            <tbody id="standingsBody"><tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-muted)">Loading...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="card" style="margin-top:14px">
-        <div class="card-header"><span class="card-title">Schedule</span></div>
-        <div class="card-body" id="scheduleList"><div style="text-align:center;color:var(--text-muted);font-size:0.75rem">Loading...</div></div>
+      <div class="form-group">
+        <label>Players B</label>
+        <input type="text" id="playersBInput" placeholder="e.g. Martínez / Ruiz">
       </div>
     </div>
   </div>
-</main>
 
-<footer class="footer"><div class="footer-text">PADEL PRO LEAGUE — BROADCAST SYSTEM v2.0 — 2026</div></footer>
+  <!-- SCORE & SETS -->
+  <div class="card">
+    <div class="card-title">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+      Score Control
+    </div>
+    <div class="score-controls">
+      <div class="score-team team-a">
+        <div class="score-team-label" id="scoreTeamALabel">TEAM A</div>
+        <div class="score-display" id="scoreADisplay">0</div>
+        <div class="score-btns">
+          <button class="btn-score minus" onclick="adjustScore('A', -1)">−</button>
+          <button class="btn-score" onclick="adjustScore('A', 1)">+</button>
+        </div>
+      </div>
+      <div class="score-team team-b">
+        <div class="score-team-label" id="scoreTeamBLabel">TEAM B</div>
+        <div class="score-display" id="scoreBDisplay">0</div>
+        <div class="score-btns">
+          <button class="btn-score minus" onclick="adjustScore('B', -1)">−</button>
+          <button class="btn-score" onclick="adjustScore('B', 1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sets-controls">
+      <div class="sets-team">
+        <span class="sets-label">Sets A</span>
+        <button class="btn-set minus" onclick="adjustSets('A', -1)">−</button>
+        <span class="sets-display" id="setsADisplay">0</span>
+        <button class="btn-set" onclick="adjustSets('A', 1)">+</button>
+      </div>
+      <div class="sets-team">
+        <span class="sets-label">Sets B</span>
+        <button class="btn-set minus" onclick="adjustSets('B', -1)">−</button>
+        <span class="sets-display" id="setsBDisplay">0</span>
+        <button class="btn-set" onclick="adjustSets('B', 1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVE -->
+  <div class="card">
+    <div class="card-title">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      Serve Indicator
+    </div>
+    <div class="serve-toggle-container">
+      <button class="serve-btn active" id="serveA" onclick="setServe('A')">
+        <span class="serve-icon"></span>Team A Serves
+      </button>
+      <button class="serve-switch-btn" onclick="switchServe()">⇄ Switch</button>
+      <button class="serve-btn" id="serveB" onclick="setServe('B')">
+        <span class="serve-icon"></span>Team B Serves
+      </button>
+    </div>
+  </div>
+
+  <!-- STREAM URL -->
+  <div class="card">
+    <div class="card-title">
+      <svg viewBox="0 0 24 24"><path d="M21 3H3c-1.11 0-2 .89-2 2v12c0 1.1.89 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.11-.9-2-2-2zm0 14H3V5h18v12zm-5-6l-7 4V7z"/></svg>
+      Stream URL
+    </div>
+    <div class="form-row single">
+      <div class="form-group">
+        <label>YouTube URL or Embed URL</label>
+        <input type="text" id="streamURLInput" placeholder="https://youtube.com/watch?v=... or embed URL">
+      </div>
+    </div>
+  </div>
+
+  <!-- SPONSORS -->
+  <div class="card">
+    <div class="card-title">
+      <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+      Sponsor Images
+    </div>
+    <div class="form-row single">
+      <div class="form-group">
+        <label>Sponsor 1 — Image URL</label>
+        <input type="text" id="sponsor1Input" placeholder="https://example.com/logo1.png">
+      </div>
+    </div>
+    <div class="form-row single">
+      <div class="form-group">
+        <label>Sponsor 2 — Image URL</label>
+        <input type="text" id="sponsor2Input" placeholder="https://example.com/logo2.png">
+      </div>
+    </div>
+    <div class="form-row single">
+      <div class="form-group">
+        <label>Sponsor 3 — Image URL</label>
+        <input type="text" id="sponsor3Input" placeholder="https://example.com/logo3.png">
+      </div>
+    </div>
+  </div>
+
+  <!-- RESET -->
+  <div class="reset-section">
+    <button class="btn-reset" onclick="resetScores()">Reset Scores</button>
+    <button class="btn-reset" onclick="resetAll()">Reset All</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
 
 <script>
-/* ============================================================
-   🔧 CONFIGURATION — EDIT THESE
-   ============================================================ */
-const CFG = {
-  // Google Sheets ID (from URL: docs.google.com/spreadsheets/d/THIS_PART/edit)
-  SHEET_ID: 'https://docs.google.com/spreadsheets/d/1WfKkccUAvyMHOcF-zMXh2kKUTsA1KXwMTwoE7-P05sg/edit?gid=1714615045#gid=1714615045',
+// ══════════════════════════════════
+// AUTH
+// ══════════════════════════════════
+let isAuthenticated = false;
 
-  // Google API Key (from console.cloud.google.com)
-  API_KEY: 'AIzaSyADRJs4m2Nbn99R0dPBpzp0a7KSeGCRSeo',
-
-  // Sheet tab names
-  MATCH_SHEET: 'Match',
-  STANDINGS_SHEET: 'Standings',
-  SCHEDULE_SHEET: 'Schedule',
-
-  // Sync interval (ms)
-  SYNC_INTERVAL: 3000,
-
-  // Fallback YouTube
-  DEFAULT_YOUTUBE: 'https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&rel=0',
-};
-
-/* STATE */
-let prevMatch = {};
-
-/* SHEETS API */
-function sheetURL(name) {
-  return `https://sheets.googleapis.com/v4/spreadsheets/${CFG.SHEET_ID}/values/${encodeURIComponent(name)}?key=${CFG.API_KEY}`;
-}
-async function fetchSheet(name) {
-  const r = await fetch(sheetURL(name));
-  if (!r.ok) throw new Error(r.status);
-  return (await r.json()).values || [];
-}
-function parseKV(rows) { const d = {}; rows.forEach(r => { if(r[0]) d[r[0]] = r[1]||''; }); return d; }
-function parseTable(rows) {
-  if (rows.length < 2) return [];
-  return rows.slice(1).map(r => ({
-    name:r[0]||'', played:+r[1]||0, wins:+r[2]||0, losses:+r[3]||0,
-    points:+r[4]||0, setDiff:+r[5]||0,
-    playing: (r[6]||'').toString().toUpperCase()==='TRUE'||r[6]==='1'
-  }));
-}
-function parseSchedule(rows) {
-  if (rows.length < 2) return [];
-  return rows.slice(1).map(r => ({ teamA:r[0]||'', teamB:r[1]||'', time:r[2]||'', status:(r[3]||'upcoming').toLowerCase() }));
+// Check saved auth
+if (sessionStorage.getItem('padel_admin_auth') === 'true') {
+  isAuthenticated = true;
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('adminDashboard').classList.add('visible');
 }
 
-/* RENDER */
-function $(id) { return document.getElementById(id); }
-function setText(id, v) { const e = $(id); if(e) e.textContent = v; }
-function flash(id) { const e=$(id); if(!e)return; e.classList.remove('highlight'); void e.offsetWidth; e.classList.add('highlight'); }
-
-function updateMatch(d) {
-  setText('vTeamAName', d.TeamA||'—'); setText('vTeamBName', d.TeamB||'—');
-  setText('vPlayersA', d.PlayersA||'—'); setText('vPlayersB', d.PlayersB||'—');
-  setText('vScoreNameA', (d.TeamAShort||(d.TeamA||'').substring(0,3)).toUpperCase());
-  setText('vScoreNameB', (d.TeamBShort||(d.TeamB||'').substring(0,3)).toUpperCase());
-  setText('vTournament', d.Tournament||'—'); setText('vRound', d.Round||'—');
-  setText('vCourt', d.Court||'—'); setText('matchRoundBadge', d.RoundShort||'—');
-
-  const fields = ['Set1A','Set1B','Set2A','Set2B','Set3A','Set3B','PointsA','PointsB'];
-  const ids = ['vs1a','vs1b','vs2a','vs2b','vs3a','vs3b','vptA','vptB'];
-  fields.forEach((f,i) => {
-    const v = d[f]!==undefined&&d[f]!=='' ? d[f] : '-';
-    if (prevMatch[f]!==undefined && prevMatch[f]!==v) flash(ids[i]);
-    setText(ids[i], v);
-  });
-
-  setText('vOverlayTeamA', (d.TeamA||'').split(' ')[0]); setText('vOverlayTeamB', (d.TeamB||'').split(' ')[0]);
-  setText('vOverlayScoreA', d.PointsA||'0'); setText('vOverlayScoreB', d.PointsB||'0');
-
-  const yt = d.StreamURL || CFG.DEFAULT_YOUTUBE;
-  const player = $('youtubePlayer');
-  const vid = (yt.match(/embed\/([^?&]+)/)||[])[1]||'';
-  if (player && vid && !player.src.includes(vid)) player.src = yt;
-
-  const live = ['TRUE','1','true'].includes(d.MatchLive);
-  const badge = $('liveBadge');
-  badge.classList.toggle('offline', !live);
-  badge.querySelector('.live-text').textContent = live ? 'LIVE' : 'OFFLINE';
-
-  prevMatch = {...d};
-}
-
-function renderStandings(data) {
-  const s = [...data].sort((a,b) => b.points-a.points || b.setDiff-a.setDiff);
-  $('standingsBody').innerHTML = s.map((t,i) => {
-    const r=i+1, rc=r<=3?` rank-${r}`:'', pc=t.playing?' playing':'';
-    return `<tr class="${pc}"><td><span class="rank-num${rc}">${r}</span></td>
-      <td class="team-cell">${t.name}</td><td>${t.played}</td><td>${t.wins}</td>
-      <td>${t.losses}</td><td class="pts-cell">${t.points}</td>
-      <td>${t.setDiff>0?'+':''}${t.setDiff}</td></tr>`;
-  }).join('');
-}
-
-function renderSchedule(data) {
-  $('scheduleList').innerHTML = data.map(m => {
-    const sc = m.status==='live'?'status-live':m.status==='upcoming'?'status-upcoming':'status-done';
-    return `<div class="schedule-item"><div><div class="schedule-teams">${m.teamA} vs ${m.teamB}</div>
-      <div class="schedule-meta">${m.time}</div></div>
-      <span class="schedule-status ${sc}">${m.status==='live'?'● LIVE':m.status.toUpperCase()}</span></div>`;
-  }).join('') || '<div style="text-align:center;color:var(--text-muted);padding:12px">No schedule</div>';
-}
-
-/* SYNC */
-async function syncData() {
-  const ind=$('syncIndicator'), txt=$('syncText');
-  ind.className='sync-indicator syncing'; txt.textContent='Updating…';
-  try {
-    const [m,s,sc] = await Promise.all([fetchSheet(CFG.MATCH_SHEET),fetchSheet(CFG.STANDINGS_SHEET),fetchSheet(CFG.SCHEDULE_SHEET)]);
-    updateMatch(parseKV(m)); renderStandings(parseTable(s)); renderSchedule(parseSchedule(sc));
-    ind.className='sync-indicator'; txt.textContent='Synced';
-  } catch(e) {
-    console.warn('Sync error:', e);
-    ind.className='sync-indicator error'; txt.textContent='Offline';
-    if (!prevMatch.TeamA) loadFallback();
+function attemptLogin() {
+  const pw = document.getElementById('passwordInput').value;
+  if (pw === ADMIN_PASSWORD) {
+    isAuthenticated = true;
+    sessionStorage.setItem('padel_admin_auth', 'true');
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('adminDashboard').classList.add('visible');
+    initAdmin();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('passwordInput').value = '';
+    document.getElementById('passwordInput').focus();
   }
 }
 
-function loadFallback() {
-  updateMatch({
-    TeamA:'THUNDER SMASH', TeamB:'NEON VOLLEY', TeamAShort:'THU', TeamBShort:'NEO',
-    PlayersA:'Lebron • Galán', PlayersB:'Coello • Tapia',
-    Tournament:'Madrid Open 2026', Round:'Quarter Final', RoundShort:'QF', Court:'Center Court',
-    Set1A:'6',Set1B:'4',Set2A:'3',Set2B:'5',Set3A:'-',Set3B:'-',PointsA:'30',PointsB:'15',
-    MatchLive:'TRUE', StreamURL:CFG.DEFAULT_YOUTUBE,
+document.getElementById('passwordInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') attemptLogin();
+});
+
+// ══════════════════════════════════
+// FIREBASE INIT
+// ══════════════════════════════════
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const matchRef = db.ref('match');
+
+// Local state
+let matchData = {
+  teamA: '', teamB: '',
+  playersA: '', playersB: '',
+  scoreA: 0, scoreB: 0,
+  setsA: 0, setsB: 0,
+  serving: 'A',
+  streamURL: '',
+  sponsors: { s1: '', s2: '', s3: '' }
+};
+
+// ══════════════════════════════════
+// TOAST
+// ══════════════════════════════════
+let toastTimeout;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = '✓ ' + msg;
+  t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ══════════════════════════════════
+// SYNC FROM FIREBASE → ADMIN UI
+// ══════════════════════════════════
+function syncUI(data) {
+  matchData = { ...matchData, ...data };
+
+  document.getElementById('teamAInput').value = data.teamA || '';
+  document.getElementById('teamBInput').value = data.teamB || '';
+  document.getElementById('playersAInput').value = data.playersA || '';
+  document.getElementById('playersBInput').value = data.playersB || '';
+  document.getElementById('streamURLInput').value = data.streamURL || '';
+
+  const sponsors = data.sponsors || {};
+  document.getElementById('sponsor1Input').value = sponsors.s1 || '';
+  document.getElementById('sponsor2Input').value = sponsors.s2 || '';
+  document.getElementById('sponsor3Input').value = sponsors.s3 || '';
+
+  updateScoreUI();
+  updateServeUI();
+}
+
+function updateScoreUI() {
+  document.getElementById('scoreADisplay').textContent = matchData.scoreA;
+  document.getElementById('scoreBDisplay').textContent = matchData.scoreB;
+  document.getElementById('setsADisplay').textContent = matchData.setsA;
+  document.getElementById('setsBDisplay').textContent = matchData.setsB;
+  document.getElementById('scoreTeamALabel').textContent = matchData.teamA || 'TEAM A';
+  document.getElementById('scoreTeamBLabel').textContent = matchData.teamB || 'TEAM B';
+}
+
+function updateServeUI() {
+  const serveA = document.getElementById('serveA');
+  const serveB = document.getElementById('serveB');
+  serveA.classList.toggle('active', matchData.serving === 'A');
+  serveB.classList.toggle('active', matchData.serving === 'B');
+}
+
+// ══════════════════════════════════
+// WRITE TO FIREBASE
+// ══════════════════════════════════
+function pushData(updates, msg) {
+  matchRef.update(updates).then(() => {
+    Object.assign(matchData, updates);
+    updateScoreUI();
+    updateServeUI();
+    if (msg) showToast(msg);
   });
-  renderStandings([
-    {name:'Thunder Smash',played:8,wins:7,losses:1,points:21,setDiff:12,playing:true},
-    {name:'Neon Volley',played:8,wins:6,losses:2,points:18,setDiff:8,playing:true},
-    {name:'Blaze Drive',played:8,wins:5,losses:3,points:15,setDiff:5,playing:false},
-    {name:'Shadow Lob',played:8,wins:4,losses:4,points:12,setDiff:1,playing:false},
-    {name:'Viper Ace',played:8,wins:4,losses:4,points:12,setDiff:-1,playing:false},
-    {name:'Iron Wall',played:8,wins:3,losses:5,points:9,setDiff:-4,playing:false},
-    {name:'Storm Serve',played:8,wins:2,losses:6,points:6,setDiff:-9,playing:false},
-    {name:'Crystal Drop',played:8,wins:1,losses:7,points:3,setDiff:-12,playing:false},
-  ]);
-  renderSchedule([
-    {teamA:'Thunder Smash',teamB:'Neon Volley',time:'NOW',status:'live'},
-    {teamA:'Blaze Drive',teamB:'Shadow Lob',time:'16:00',status:'upcoming'},
-    {teamA:'Viper Ace',teamB:'Iron Wall',time:'18:30',status:'upcoming'},
-  ]);
 }
 
-/* TABS */
-function switchTab(t) { document.querySelectorAll('.nav-tab').forEach(n => n.classList.toggle('active', n.dataset.tab===t)); }
-function switchMobileTab(t) {
-  document.querySelectorAll('.mobile-tab').forEach(n => n.classList.toggle('active', n.dataset.mtab===t));
-  document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('mobile-visible'));
-  const map = {match:'match',details:'details',standings:'standings',schedule:'standings'};
-  const el = document.querySelector(`[data-section="${map[t]}"]`);
-  if (el) el.classList.add('mobile-visible');
+// Score
+function adjustScore(team, delta) {
+  const key = team === 'A' ? 'scoreA' : 'scoreB';
+  const newVal = Math.max(0, (matchData[key] || 0) + delta);
+  pushData({ [key]: newVal }, `Score ${team}: ${newVal}`);
 }
 
-document.addEventListener('DOMContentLoaded', () => { syncData(); setInterval(syncData, CFG.SYNC_INTERVAL); });
+// Sets
+function adjustSets(team, delta) {
+  const key = team === 'A' ? 'setsA' : 'setsB';
+  const newVal = Math.max(0, (matchData[key] || 0) + delta);
+  pushData({ [key]: newVal }, `Sets ${team}: ${newVal}`);
+}
+
+// Serve
+function setServe(team) {
+  pushData({ serving: team }, `Serve → Team ${team}`);
+}
+
+function switchServe() {
+  const newServe = matchData.serving === 'A' ? 'B' : 'A';
+  pushData({ serving: newServe }, `Serve → Team ${newServe}`);
+}
+
+// Resets
+function resetScores() {
+  if (!confirm('Reset scores and sets to 0?')) return;
+  pushData({ scoreA: 0, scoreB: 0, setsA: 0, setsB: 0 }, 'Scores reset');
+}
+
+function resetAll() {
+  if (!confirm('Reset EVERYTHING? Teams, scores, stream, sponsors?')) return;
+  matchRef.set({
+    teamA: '', teamB: '',
+    playersA: '', playersB: '',
+    scoreA: 0, scoreB: 0,
+    setsA: 0, setsB: 0,
+    serving: 'A',
+    streamURL: '',
+    sponsors: { s1: '', s2: '', s3: '' }
+  }).then(() => {
+    matchData = { teamA: '', teamB: '', playersA: '', playersB: '', scoreA: 0, scoreB: 0, setsA: 0, setsB: 0, serving: 'A', streamURL: '', sponsors: { s1: '', s2: '', s3: '' } };
+    syncUI(matchData);
+    showToast('All data reset');
+  });
+}
+
+// ══════════════════════════════════
+// TEXT INPUT DEBOUNCED SYNC
+// ══════════════════════════════════
+function debounce(fn, ms) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+const syncText = debounce((key, val) => {
+  if (key.startsWith('sponsors.')) {
+    pushData({ [key]: val });
+  } else {
+    pushData({ [key]: val });
+  }
+}, 400);
+
+function bindTextInput(elId, key) {
+  document.getElementById(elId).addEventListener('input', (e) => {
+    syncText(key, e.target.value);
+  });
+}
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+function initAdmin() {
+  // Listen for data
+  matchRef.on('value', (snap) => {
+    const data = snap.val();
+    if (data) syncUI(data);
+  });
+
+  // Bind text inputs
+  bindTextInput('teamAInput', 'teamA');
+  bindTextInput('teamBInput', 'teamB');
+  bindTextInput('playersAInput', 'playersA');
+  bindTextInput('playersBInput', 'playersB');
+  bindTextInput('streamURLInput', 'streamURL');
+  bindTextInput('sponsor1Input', 'sponsors/s1');
+  bindTextInput('sponsor2Input', 'sponsors/s2');
+  bindTextInput('sponsor3Input', 'sponsors/s3');
+}
+
+// Auto-init if already authed
+if (isAuthenticated) initAdmin();
 </script>
 </body>
 </html>
