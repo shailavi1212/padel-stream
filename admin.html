@@ -3,901 +3,561 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PADEL LIVE — Admin Control</title>
+<title>BEER SHEVA PADEL LEAGUE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
 :root {
-  --bg-deep: #050810;
-  --bg-primary: #0b0f1a;
-  --bg-secondary: #111827;
-  --bg-card: rgba(15, 20, 35, 0.9);
-  --bg-input: rgba(10, 14, 26, 0.8);
-
-  --neon-cyan: #00f0ff;
-  --neon-purple: #a855f7;
-  --neon-pink: #f472b6;
-  --neon-green: #22d3ee;
-  --neon-yellow: #fbbf24;
-  --neon-red: #ef4444;
-
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-bright: #ffffff;
-
-  --radius: 6px;
-  --radius-lg: 10px;
+  --bg-deep: #070E18; --bg-primary: #0B1C2D; --bg-secondary: #0F2438;
+  --bg-panel: rgba(11,28,45,0.92); --bg-glass: rgba(15,36,56,0.55);
+  --gold: #D4A843; --gold-light: #F0CC6B; --gold-dim: rgba(212,168,67,0.15);
+  --electric-blue: #3B9FE7; --electric-blue-bright: #5BB8FF;
+  --navy-light: #1A3A5C;
+  --text-primary: #D8E3EF; --text-secondary: #7A93AB; --text-bright: #FFFFFF;
+  --radius: 6px; --radius-lg: 14px;
 }
+html, body { height: 100%; background: var(--bg-deep); color: var(--text-primary); font-family: 'Inter', -apple-system, sans-serif; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 25% 0%, rgba(59,159,231,0.05) 0%, transparent 55%), radial-gradient(ellipse at 75% 100%, rgba(212,168,67,0.04) 0%, transparent 55%), radial-gradient(ellipse at 50% 50%, var(--bg-primary) 0%, var(--bg-deep) 100%); z-index: -2; }
 
-html, body {
-  min-height: 100vh;
-  background: var(--bg-deep);
-  color: var(--text-primary);
-  font-family: 'Rajdhani', sans-serif;
+/* NAV */
+.top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: linear-gradient(180deg, rgba(11,28,45,0.98), rgba(7,14,24,0.95)); border-bottom: 1px solid rgba(59,159,231,0.1); backdrop-filter: blur(20px); padding: 0 16px; }
+.top-nav::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent 10%, var(--gold) 35%, var(--electric-blue) 65%, transparent 90%); opacity: 0.5; }
+.nav-brand { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 4px; color: var(--gold); padding: 14px 24px 14px 0; border-right: 1px solid rgba(59,159,231,0.08); margin-right: 8px; white-space: nowrap; }
+.nav-item { padding: 14px 22px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); cursor: pointer; transition: all 0.3s; position: relative; user-select: none; white-space: nowrap; }
+.nav-item:hover { color: var(--text-bright); }
+.nav-item.active { color: var(--electric-blue-bright); }
+.nav-item.active::after { content: ''; position: absolute; bottom: 0; left: 20%; right: 20%; height: 2px; background: var(--electric-blue); box-shadow: 0 0 8px rgba(59,159,231,0.4); z-index: 2; }
+
+/* PAGES */
+.page-section { display: none; max-width: 1400px; margin: 0 auto; padding: 16px; min-height: calc(100vh - 50px); flex-direction: column; animation: fadeInPage 0.35s ease; }
+.page-section.active { display: flex; }
+@keyframes fadeInPage { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* BROADCAST */
+.broadcast-container { display: flex; flex-direction: column; gap: 0; width: 100%; }
+.sponsor-bar { display: flex; align-items: center; justify-content: center; gap: 28px; padding: 12px 24px; background: linear-gradient(135deg, rgba(11,28,45,0.95), rgba(15,36,56,0.85)); border: 1px solid rgba(59,159,231,0.1); border-bottom: none; border-radius: var(--radius-lg) var(--radius-lg) 0 0; backdrop-filter: blur(20px); position: relative; overflow: hidden; min-height: 62px; z-index: 1; box-shadow: none; }
+.sponsor-bar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent 5%, var(--gold) 30%, var(--electric-blue) 50%, var(--gold) 70%, transparent 95%); opacity: 0.7; }
+.sponsor-bar .label { font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); opacity: 0.45; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); }
+.sponsor-slot { width: 200px; height: 52px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(212,168,67,0.08); border-radius: var(--radius); background: rgba(0,0,0,0.12); padding: 6px 14px; transition: all 0.4s ease; animation: sponsorFade 6s ease-in-out infinite; }
+.sponsor-slot:nth-child(3) { animation-delay: 2s; } .sponsor-slot:nth-child(4) { animation-delay: 4s; }
+@keyframes sponsorFade { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; } }
+.sponsor-slot:hover { border-color: rgba(212,168,67,0.3); }
+.sponsor-slot img { max-width: 100%; max-height: 100%; object-fit: contain; filter: brightness(0.9) contrast(1.1); transition: filter 0.3s; }
+.sponsor-slot .empty-sponsor { font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 2px; color: rgba(122,147,171,0.25); text-transform: uppercase; }
+
+.video-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-left: 1px solid rgba(59,159,231,0.08); border-right: 1px solid rgba(59,159,231,0.08); border-bottom: 1px solid rgba(59,159,231,0.08); border-radius: 0 0 22px 22px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.35); isolation: isolate; }
+.video-wrapper::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4,10,18,0.32) 0%, rgba(4,10,18,0.02) 28%, rgba(4,10,18,0.06) 55%, rgba(4,10,18,0.42) 100%); z-index: 1; pointer-events: none; }
+.video-wrapper iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; z-index: 0; }
+.video-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; background: radial-gradient(ellipse at center, rgba(59,159,231,0.03) 0%, transparent 70%), var(--bg-deep); z-index: 0; }
+.video-placeholder .icon { width: 80px; height: 80px; border: 2px solid rgba(212,168,67,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: pulseGlow 2.5s ease-in-out infinite; }
+.video-placeholder .icon svg { width: 30px; height: 30px; fill: var(--gold); opacity: 0.5; margin-left: 4px; }
+.video-placeholder .text { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 5px; color: var(--text-secondary); text-transform: uppercase; }
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(212,168,67,0.08); } 50% { box-shadow: 0 0 40px rgba(212,168,67,0.18); } }
+
+.scoreboard-hud { position: absolute; top: 18px; right: 18px; left: auto; bottom: auto; width: 26%; min-width: 320px; max-width: 430px; display: flex; flex-direction: column; background: linear-gradient(180deg, rgba(8,20,34,0.32), rgba(5,14,24,0.46)); border: 1px solid rgba(91,184,255,0.12); border-radius: 14px; overflow: hidden; backdrop-filter: blur(14px); z-index: 4; box-shadow: 0 10px 26px rgba(0,0,0,0.2); }
+.scoreboard-hud::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent 5%, var(--gold) 35%, var(--electric-blue) 65%, transparent 95%); opacity: 0.6; }
+.score-header { display: flex; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(59,159,231,0.05); background: linear-gradient(90deg, rgba(255,255,255,0.015), rgba(255,255,255,0.005)); }
+.score-header .col-name { flex: 1; padding-left: 14px; }
+.score-header .col-label { font-family: 'Inter', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-secondary); opacity: 0.45; width: 44px; text-align: center; }
+.score-header .col-label.pts-label { color: var(--gold); opacity: 0.55; }
+.score-header .col-label.set-history-label { display: none; }
+.team-row { display: flex; align-items: center; padding: 9px 0; transition: all 0.35s ease; position: relative; }
+.team-row:first-of-type { border-bottom: 1px solid rgba(59,159,231,0.04); }
+.team-row.serving { background: linear-gradient(90deg, rgba(212,168,67,0.05), transparent 50%); }
+.serve-cell { width: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.serve-indicator { width: 7px; height: 7px; border-radius: 50%; background: rgba(100,120,140,0.12); border: 1px solid rgba(100,120,140,0.08); transition: all 0.4s ease; }
+.team-row.serving .serve-indicator { background: var(--gold); border-color: var(--gold-light); box-shadow: 0 0 8px rgba(212,168,67,0.6), 0 0 22px rgba(212,168,67,0.25); animation: servePulse 1.8s ease-in-out infinite; }
+@keyframes servePulse { 0%, 100% { box-shadow: 0 0 8px rgba(212,168,67,0.5), 0 0 20px rgba(212,168,67,0.2); transform: scale(1); } 50% { box-shadow: 0 0 12px rgba(212,168,67,0.7), 0 0 30px rgba(212,168,67,0.35); transform: scale(1.15); } }
+.name-cell { flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0; padding-right: 8px; }
+.team-name { font-family: 'Bebas Neue', sans-serif; font-size: 14px; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text-bright); line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.team-row:first-of-type .team-name { color: var(--electric-blue-bright); text-shadow: 0 0 24px rgba(59,159,231,0.2); }
+.team-row:last-of-type .team-name { color: var(--gold-light); text-shadow: 0 0 24px rgba(212,168,67,0.2); }
+.player-names { font-family: 'Inter', sans-serif; font-size: 9px; color: var(--text-secondary); letter-spacing: 0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.score-cell { width: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
+.score-cell::before { content: ''; position: absolute; left: 0; top: 18%; bottom: 18%; width: 1px; background: rgba(59,159,231,0.04); }
+.score-cell .val { font-family: 'Bebas Neue', sans-serif; line-height: 1; transition: all 0.2s; }
+.score-cell .val.pulse { animation: scorePulse 0.5s ease-out; }
+@keyframes scorePulse { 0% { transform: scale(1); } 30% { transform: scale(1.25); color: var(--electric-blue-bright); text-shadow: 0 0 18px var(--electric-blue); } 100% { transform: scale(1); } }
+.score-cell.sets-cell .val { font-size: 16px; color: var(--electric-blue); }
+.score-cell.games-cell .val { font-size: 20px; color: var(--text-bright); }
+.score-cell.pts-cell { background: rgba(212,168,67,0.025); }
+.score-cell.pts-cell::before { background: rgba(212,168,67,0.06); }
+.score-cell.pts-cell .val { font-size: 20px; color: var(--gold); text-shadow: 0 0 14px rgba(212,168,67,0.3); }
+.set-history-cell { display: none; }
+.set-history-cell::before { content: ''; position: absolute; left: 0; top: 22%; bottom: 22%; width: 1px; background: rgba(59,159,231,0.025); }
+.set-history-cell .set-score { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--text-secondary); opacity: 0.5; line-height: 1; position: relative; }
+.set-history-cell .set-score .tb-sup { font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 600; color: var(--text-secondary); opacity: 0.5; position: absolute; top: -3px; right: -9px; }
+.set-history-cell.set-won .set-score { color: var(--text-bright); opacity: 1; }
+@keyframes setFadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.broadcast-footer { display: flex; justify-content: center; padding: 4px 18px 10px; opacity: 0.3; }
+.broadcast-footer span { font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 5px; text-transform: uppercase; color: var(--text-secondary); }
+.loading-overlay { position: fixed; inset: 0; background: var(--bg-deep); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; z-index: 1000; transition: opacity 0.6s, visibility 0.6s; }
+.loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.loading-spinner { width: 44px; height: 44px; border: 2px solid rgba(212,168,67,0.1); border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 5px; color: var(--text-secondary); text-transform: uppercase; }
+
+/* STANDINGS */
+.page-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 6px; color: var(--text-bright); text-align: center; margin: 24px 0 8px; }
+.page-subtitle { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--text-secondary); text-align: center; margin-bottom: 32px; opacity: 0.6; }
+.group-tabs { display: flex; justify-content: center; gap: 4px; margin-bottom: 0; }
+.group-tab { padding: 10px 28px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); background: rgba(15,36,56,0.4); border: 1px solid rgba(59,159,231,0.08); border-bottom: none; border-radius: var(--radius) var(--radius) 0 0; cursor: pointer; transition: all 0.3s; user-select: none; }
+.group-tab:hover { color: var(--text-bright); background: rgba(15,36,56,0.6); }
+.group-tab.active { color: var(--gold); background: rgba(11,28,45,0.95); border-color: rgba(212,168,67,0.2); }
+.glass-panel { background: linear-gradient(180deg, rgba(11,28,45,0.95), rgba(7,14,24,0.98)); border: 1px solid rgba(59,159,231,0.1); border-radius: 0 0 var(--radius-lg) var(--radius-lg); overflow: hidden; backdrop-filter: blur(20px); position: relative; }
+.glass-panel::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent 10%, var(--gold) 40%, var(--electric-blue) 60%, transparent 90%); opacity: 0.4; }
+.tab-content { display: none; animation: fadeInPage 0.3s ease; }
+.tab-content.active { display: block; }
+.standings-table { width: 100%; border-collapse: collapse; }
+.standings-table thead th { font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); opacity: 0.5; padding: 14px 6px; text-align: center; border-bottom: 1px solid rgba(59,159,231,0.08); }
+.standings-table thead th:first-child { width: 36px; }
+.standings-table thead th:nth-child(2) { text-align: left; padding-left: 16px; }
+.standings-table thead th.col-w { color: var(--gold); opacity: 0.7; }
+.standings-table thead th.col-p { color: var(--text-primary); opacity: 0.6; }
+.standings-table thead th.col-diff { color: var(--electric-blue); opacity: 0.6; }
+.standings-table tbody tr { border-bottom: 1px solid rgba(59,159,231,0.04); transition: background 0.2s; }
+.standings-table tbody tr:hover { background: rgba(59,159,231,0.03); }
+.standings-table tbody tr:last-child { border-bottom: none; }
+.standings-table td { padding: 13px 6px; text-align: center; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.standings-table td:first-child { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--text-secondary); opacity: 0.4; width: 36px; }
+.standings-table td:nth-child(2) { text-align: left; padding-left: 16px; font-weight: 600; color: var(--text-bright); max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.standings-table td.col-w { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gold); }
+.standings-table td.col-p { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--text-primary); opacity: 0.7; }
+.standings-table td.col-plus { color: rgba(91,184,255,0.7); }
+.standings-table td.col-minus { color: rgba(122,147,171,0.5); }
+.standings-table td.col-diff { font-weight: 700; }
+.standings-table td.col-diff.positive { color: rgba(91,184,255,0.9); }
+.standings-table td.col-diff.negative { color: rgba(239,100,100,0.6); }
+.standings-table td.col-diff.zero { color: var(--text-secondary); opacity: 0.5; }
+.standings-table tbody tr:nth-child(1) td:first-child { color: var(--gold); opacity: 1; }
+.standings-table tbody tr:nth-child(2) td:first-child { color: var(--text-primary); opacity: 0.7; }
+.standings-table tbody tr:nth-child(3) td:first-child { color: #cd7f32; opacity: 0.8; }
+.standings-empty { text-align: center; padding: 60px 20px; color: var(--text-secondary); opacity: 0.7; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; }
+
+/* SCHEDULE */
+.fixture-tabs { display: flex; justify-content: center; gap: 3px; margin-bottom: 0; flex-wrap: wrap; }
+.fixture-tab { padding: 8px 16px; font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-secondary); background: rgba(15,36,56,0.4); border: 1px solid rgba(59,159,231,0.06); border-bottom: none; border-radius: var(--radius) var(--radius) 0 0; cursor: pointer; transition: all 0.3s; user-select: none; }
+.fixture-tab:hover { color: var(--text-bright); }
+.fixture-tab.active { color: var(--gold); background: rgba(11,28,45,0.95); border-color: rgba(212,168,67,0.2); }
+
+.fixture-group-label { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 4px; color: var(--gold); padding: 20px 20px 8px; opacity: 0.8; }
+.fixture-date { font-family: 'Inter', sans-serif; font-size: 11px; color: var(--text-secondary); padding: 0 20px 14px; letter-spacing: 1px; opacity: 0.6; }
+.fixture-match { display: flex; flex-direction: column; padding: 0 20px; border-bottom: 1px solid rgba(59,159,231,0.04); transition: background 0.2s; }
+.fixture-match:hover { background: rgba(59,159,231,0.02); }
+.fixture-match:last-child { border-bottom: none; }
+.fm-datetime { font-family: 'Inter', sans-serif; font-size: 10px; color: var(--gold); opacity: 0.6; padding: 12px 0 4px; letter-spacing: 1px; }
+.fm-teams-row { display: flex; align-items: center; padding: 4px 0 12px; }
+.fm-team { flex: 1; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fm-team.away { text-align: right; }
+.fm-score-box { min-width: 80px; text-align: center; padding: 0 12px; }
+.fm-score { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--electric-blue-bright); }
+.fm-score.pending { font-size: 14px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 1px; font-family: 'Inter', sans-serif; }
+.fm-vs { font-family: 'Inter', sans-serif; font-size: 10px; color: var(--text-secondary); opacity: 0.3; }
+.fixture-empty { text-align: center; padding: 50px 20px; color: var(--text-secondary); opacity: 0.5; font-size: 13px; letter-spacing: 2px; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .nav-brand { font-size: 14px; letter-spacing: 2px; padding: 12px 14px 12px 0; }
+  .nav-item { padding: 12px 12px; font-size: 9px; letter-spacing: 1px; }
+  .sponsor-bar { gap: 12px; padding: 8px 14px; min-height: 48px; }
+  .sponsor-bar .label { display: none; }
+  .sponsor-slot { width: 100px; height: 34px; }
+  .video-wrapper { border-radius: 0 0 16px 16px; }
+  .team-name { font-size: 12px; letter-spacing: 1px; }
+  .player-names { font-size: 8px; }
+  .score-cell { width: 38px; }
+  .score-cell.sets-cell .val { font-size: 13px; }
+  .score-cell.games-cell .val { font-size: 16px; }
+  .score-cell.pts-cell .val { font-size: 16px; }
+  .score-header .col-label { width: 38px; font-size: 7px; }
+  .score-header .col-name { padding-left: 10px; }
+  .serve-cell { width: 18px; }
+  .scoreboard-hud { top: 12px; right: 12px; left: auto; bottom: auto; width: 30%; min-width: 240px; max-width: 280px; border-radius: 12px; }
+  .page-title { font-size: 24px; }
+  .group-tab { padding: 8px 16px; font-size: 10px; }
+  .fixture-tab { padding: 6px 10px; font-size: 8px; }
+  .standings-table td { padding: 10px 3px; font-size: 11px; }
+  .standings-table td:nth-child(2) { max-width: 100px; font-size: 11px; }
+  .standings-table thead th { font-size: 7px; padding: 10px 3px; }
+  .fm-team { font-size: 11px; } .fm-score { font-size: 18px; }
 }
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 15% 10%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 85% 90%, rgba(0, 240, 255, 0.05) 0%, transparent 50%);
-  z-index: -1;
+@media (max-width: 480px) {
+  .nav-brand { display: none; }
+  .sponsor-bar { gap: 8px; padding: 7px 10px; min-height: 42px; }
+  .team-name { font-size: 6px; letter-spacing: 0.2px; }
+  .player-names { display: none; }
+  .score-cell { width: 14px; }
+  .score-cell.sets-cell .val { font-size: 6px; }
+  .score-cell.games-cell .val { font-size: 7px; }
+  .score-cell.pts-cell .val { font-size: 7px; }
+  .sponsor-slot { width: 80px; height: 28px; }
+  .video-wrapper { border-radius: 0 0 14px 14px; }
+  .scoreboard-hud { top: 6px; right: 6px; left: auto; bottom: auto; width: 31%; min-width: 0; max-width: 96px; border-radius: 6px; }
+  .score-header { padding: 1px 0; }
+  .score-header .col-name { padding-left: 3px; }
+  .score-header .col-label { width: 14px; font-size: 3px; letter-spacing: 0; }
+  .serve-cell { width: 8px; }
+  .serve-indicator { width: 4px; height: 4px; }
+  .team-row { padding: 2px 0; }
+  .name-cell { padding-right: 2px; gap: 0; }
+  .standings-table td:nth-child(2) { max-width: 80px; font-size: 10px; }
 }
-
-/* ═══════ LOGIN SCREEN ═══════ */
-.login-screen {
-  position: fixed;
-  inset: 0;
-  background: var(--bg-deep);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  transition: opacity 0.4s, visibility 0.4s;
+@media (max-width: 480px) and (orientation: portrait) {
+  .scoreboard-hud { width: 22.4%; max-width: 70px; }
 }
-
-.login-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-
-.login-box {
-  background: var(--bg-card);
-  border: 1px solid rgba(0, 240, 255, 0.15);
-  border-radius: var(--radius-lg);
-  padding: 40px 36px;
-  width: 360px;
-  max-width: 90%;
-  text-align: center;
-  backdrop-filter: blur(20px);
+@media (max-width: 480px) and (orientation: landscape) {
+  .scoreboard-hud { width: 14%; max-width: 44px; }
+  .team-name { font-size: 5px; }
+  .score-cell { width: 12px; }
+  .score-cell.games-cell .val,
+  .score-cell.pts-cell .val { font-size: 6px; }
+  .score-header .col-label { width: 12px; font-size: 2px; }
 }
-
-.login-box h1 {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 4px;
-  color: var(--neon-cyan);
-  margin-bottom: 6px;
+@media (max-height: 500px) and (orientation: landscape) {
+  .scoreboard-hud {
+    top: 10px;
+    right: 8px;
+    left: auto;
+    bottom: auto;
+    width: 16%;
+    min-width: 0;
+    max-width: 132px;
+    border-radius: 8px;
+  }
+  .score-header { padding: 2px 0; }
+  .score-header .col-name { padding-left: 5px; }
+  .score-header .col-label { width: 18px; font-size: 4px; letter-spacing: 0; }
+  .team-name { font-size: 7px; letter-spacing: 0.2px; }
+  .player-names { display: none; }
+  .serve-cell { width: 10px; }
+  .serve-indicator { width: 5px; height: 5px; }
+  .team-row { padding: 3px 0; }
+  .name-cell { padding-right: 3px; gap: 0; }
+  .score-cell { width: 18px; }
+  .score-cell.sets-cell .val { font-size: 7px; }
+  .score-cell.games-cell .val,
+  .score-cell.pts-cell .val { font-size: 8px; }
 }
-
-.login-box p {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 24px;
-}
-
-.login-box input {
-  width: 100%;
-  padding: 12px 16px;
-  background: var(--bg-input);
-  border: 1px solid rgba(0, 240, 255, 0.12);
-  border-radius: var(--radius);
-  color: var(--text-primary);
-  font-family: 'Space Mono', monospace;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.3s;
-  margin-bottom: 16px;
-  text-align: center;
-  letter-spacing: 3px;
-}
-
-.login-box input:focus { border-color: var(--neon-cyan); }
-
-.login-box input::placeholder {
-  letter-spacing: 1px;
-  color: var(--text-secondary);
-  opacity: 0.5;
-}
-
-.login-error {
-  font-size: 13px;
-  color: var(--neon-red);
-  margin-bottom: 12px;
-  display: none;
-}
-
-.login-box button {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(168, 85, 247, 0.15));
-  border: 1px solid rgba(0, 240, 255, 0.3);
-  border-radius: var(--radius);
-  color: var(--neon-cyan);
-  font-family: 'Orbitron', sans-serif;
-  font-size: 12px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.login-box button:hover {
-  background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(168, 85, 247, 0.25));
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
-}
-
-/* ═══════ ADMIN DASHBOARD ═══════ */
-.admin-dashboard {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px 16px 60px;
-  display: none;
-}
-
-.admin-dashboard.visible { display: block; }
-
-/* Header */
-.admin-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 0;
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba(0, 240, 255, 0.08);
-}
-
-.admin-header h1 {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  color: var(--neon-cyan);
-}
-
-.admin-header .status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--neon-green);
-  font-family: 'Space Mono', monospace;
-}
-
-.admin-header .status .dot {
-  width: 8px;
-  height: 8px;
-  background: var(--neon-green);
-  border-radius: 50%;
-  animation: statusPulse 2s ease-in-out infinite;
-}
-
-@keyframes statusPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* Cards */
-.card {
-  background: var(--bg-card);
-  border: 1px solid rgba(0, 240, 255, 0.08);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  margin-bottom: 16px;
-  backdrop-filter: blur(10px);
-}
-
-.card-title {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--neon-purple);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.card-title svg {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-}
-
-/* Form elements */
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.form-row.single {
-  grid-template-columns: 1fr;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.form-group label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  font-family: 'Rajdhani', sans-serif;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 10px 14px;
-  background: var(--bg-input);
-  border: 1px solid rgba(0, 240, 255, 0.08);
-  border-radius: var(--radius);
-  color: var(--text-primary);
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.form-group input:focus { border-color: var(--neon-cyan); }
-
-/* Score controls */
-.score-controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.score-team {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(0, 240, 255, 0.06);
-}
-
-.score-team.team-a { border-color: rgba(0, 240, 255, 0.12); }
-.score-team.team-b { border-color: rgba(168, 85, 247, 0.12); }
-
-.score-team-label {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 11px;
-  letter-spacing: 2px;
-  font-weight: 600;
-}
-
-.score-team.team-a .score-team-label { color: var(--neon-cyan); }
-.score-team.team-b .score-team-label { color: var(--neon-purple); }
-
-.score-display {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 42px;
-  font-weight: 900;
-  color: var(--text-bright);
-  line-height: 1;
-  min-width: 60px;
-  text-align: center;
-}
-
-.score-btns {
-  display: flex;
-  gap: 8px;
-}
-
-.btn-score {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius);
-  border: 1px solid rgba(0, 240, 255, 0.15);
-  background: rgba(0, 240, 255, 0.06);
-  color: var(--neon-cyan);
-  font-family: 'Orbitron', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.btn-score:hover {
-  background: rgba(0, 240, 255, 0.15);
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
-}
-
-.btn-score.minus {
-  border-color: rgba(239, 68, 68, 0.2);
-  background: rgba(239, 68, 68, 0.06);
-  color: var(--neon-red);
-}
-
-.btn-score.minus:hover {
-  background: rgba(239, 68, 68, 0.15);
-  box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
-}
-
-/* Sets row */
-.sets-controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-top: 12px;
-}
-
-.sets-team {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.sets-label {
-  font-size: 12px;
-  color: var(--text-secondary);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.sets-display {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--neon-green);
-  min-width: 30px;
-  text-align: center;
-}
-
-.btn-set {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius);
-  border: 1px solid rgba(34, 211, 238, 0.15);
-  background: rgba(34, 211, 238, 0.06);
-  color: var(--neon-green);
-  font-family: 'Orbitron', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.btn-set:hover {
-  background: rgba(34, 211, 238, 0.15);
-}
-
-.btn-set.minus {
-  color: var(--neon-red);
-  border-color: rgba(239, 68, 68, 0.15);
-  background: rgba(239, 68, 68, 0.06);
-}
-
-/* Serve toggle */
-.serve-toggle-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 8px;
-}
-
-.serve-btn {
-  padding: 10px 24px;
-  border-radius: var(--radius);
-  border: 1px solid rgba(251, 191, 36, 0.15);
-  background: rgba(251, 191, 36, 0.04);
-  color: var(--text-secondary);
-  font-family: 'Orbitron', sans-serif;
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s;
-  position: relative;
-}
-
-.serve-btn.active {
-  border-color: var(--neon-yellow);
-  background: rgba(251, 191, 36, 0.12);
-  color: var(--neon-yellow);
-  box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
-}
-
-.serve-btn:hover {
-  background: rgba(251, 191, 36, 0.1);
-}
-
-.serve-icon {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: transparent;
-  margin-right: 6px;
-  vertical-align: middle;
-  transition: background 0.3s;
-}
-
-.serve-btn.active .serve-icon {
-  background: var(--neon-yellow);
-  box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
-}
-
-.serve-switch-btn {
-  padding: 10px 18px;
-  border-radius: var(--radius);
-  border: 1px solid rgba(244, 114, 182, 0.2);
-  background: rgba(244, 114, 182, 0.06);
-  color: var(--neon-pink);
-  font-family: 'Orbitron', sans-serif;
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.serve-switch-btn:hover {
-  background: rgba(244, 114, 182, 0.15);
-  box-shadow: 0 0 15px rgba(244, 114, 182, 0.15);
-}
-
-/* Reset button */
-.reset-section {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.btn-reset {
-  padding: 10px 28px;
-  border-radius: var(--radius);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  background: rgba(239, 68, 68, 0.06);
-  color: var(--neon-red);
-  font-family: 'Orbitron', sans-serif;
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-reset:hover {
-  background: rgba(239, 68, 68, 0.15);
-  box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
-}
-
-/* Toast notification */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: rgba(15, 20, 35, 0.95);
-  border: 1px solid rgba(0, 240, 255, 0.2);
-  border-radius: var(--radius);
-  padding: 12px 20px;
-  font-family: 'Space Mono', monospace;
-  font-size: 12px;
-  color: var(--neon-green);
-  transform: translateY(80px);
-  opacity: 0;
-  transition: all 0.3s ease;
-  z-index: 1000;
-  backdrop-filter: blur(10px);
-}
-
-.toast.show {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .admin-dashboard { padding: 12px 10px 40px; }
-  .form-row { grid-template-columns: 1fr; }
-  .score-controls { grid-template-columns: 1fr; gap: 12px; }
-  .sets-controls { grid-template-columns: 1fr; gap: 12px; }
-  .serve-toggle-container { flex-direction: column; gap: 10px; }
-  .score-display { font-size: 32px; }
+@media (min-width: 1800px) {
+  .team-name { font-size: 18px; }
+  .score-cell { width: 64px; }
+  .score-cell.games-cell .val { font-size: 28px; }
+  .score-cell.pts-cell .val { font-size: 28px; }
 }
 </style>
 </head>
 <body>
+<div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"></div><div class="loading-text">Connecting to broadcast...</div></div>
 
-<!-- LOGIN SCREEN -->
-<div class="login-screen" id="loginScreen">
-  <div class="login-box">
-    <h1>ADMIN</h1>
-    <p>Padel Live Broadcast Control</p>
-    <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="off">
-    <div class="login-error" id="loginError">Incorrect password</div>
-    <button onclick="attemptLogin()">Authenticate</button>
+<nav class="top-nav">
+  <div class="nav-brand">BS PADEL</div>
+  <div class="nav-item active" onclick="showPage('live', this)">Live</div>
+  <div class="nav-item" onclick="showPage('standings', this)">Standings</div>
+  <div class="nav-item" onclick="showPage('schedule', this)">Schedule</div>
+</nav>
+
+<!-- PAGE: LIVE -->
+<div class="page-section active" id="page-live">
+  <div class="broadcast-container">
+    <div class="sponsor-bar">
+      <span class="label">Sponsors</span>
+      <div class="sponsor-slot" id="sponsor1"><span class="empty-sponsor">Sponsor</span></div>
+      <div class="sponsor-slot" id="sponsor2"><span class="empty-sponsor">Sponsor</span></div>
+      <div class="sponsor-slot" id="sponsor3"><span class="empty-sponsor">Sponsor</span></div>
+    </div>
+    <div class="video-wrapper" id="videoWrapper">
+      <div class="video-placeholder" id="videoPlaceholder">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="text">Waiting for stream...</div>
+      </div>
+      <div class="scoreboard-hud">
+        <div class="score-header" id="scoreHeader">
+          <div class="col-name"></div><div id="headerSetHistory" style="display:contents;"></div>
+          <div class="col-label">SETS</div><div class="col-label">GAMES</div><div class="col-label pts-label">PTS</div>
+        </div>
+        <div class="team-row" id="rowA"><div class="serve-cell"><div class="serve-indicator"></div></div><div class="name-cell"><div class="team-name" id="teamAName">TEAM A</div><div class="player-names" id="playersA">&mdash;</div></div><div id="setHistoryA" style="display:contents;"></div><div class="score-cell sets-cell"><span class="val" id="setsA">0</span></div><div class="score-cell games-cell"><span class="val" id="scoreA">0</span></div><div class="score-cell pts-cell"><span class="val" id="pointsA">0</span></div></div>
+        <div class="team-row" id="rowB"><div class="serve-cell"><div class="serve-indicator"></div></div><div class="name-cell"><div class="team-name" id="teamBName">TEAM B</div><div class="player-names" id="playersB">&mdash;</div></div><div id="setHistoryB" style="display:contents;"></div><div class="score-cell sets-cell"><span class="val" id="setsB">0</span></div><div class="score-cell games-cell"><span class="val" id="scoreB">0</span></div><div class="score-cell pts-cell"><span class="val" id="pointsB">0</span></div></div>
+      </div>
+    </div>
+    <div class="broadcast-footer"><span>Padel Live Broadcast System</span></div>
   </div>
 </div>
 
-<!-- ADMIN DASHBOARD -->
-<div class="admin-dashboard" id="adminDashboard">
-
-  <div class="admin-header">
-    <h1>⚡ BROADCAST CONTROL</h1>
-    <div class="status">
-      <span class="dot"></span>
-      Firebase Connected
-    </div>
-  </div>
-
-  <!-- TEAM NAMES -->
-  <div class="card">
-    <div class="card-title">
-      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-      Teams & Players
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Team A Name</label>
-        <input type="text" id="teamAInput" placeholder="e.g. THUNDER" maxlength="20">
-      </div>
-      <div class="form-group">
-        <label>Team B Name</label>
-        <input type="text" id="teamBInput" placeholder="e.g. STORM" maxlength="20">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Players A</label>
-        <input type="text" id="playersAInput" placeholder="e.g. García / López">
-      </div>
-      <div class="form-group">
-        <label>Players B</label>
-        <input type="text" id="playersBInput" placeholder="e.g. Martínez / Ruiz">
-      </div>
-    </div>
-  </div>
-
-  <!-- SCORE & SETS -->
-  <div class="card">
-    <div class="card-title">
-      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
-      Score Control
-    </div>
-    <div class="score-controls">
-      <div class="score-team team-a">
-        <div class="score-team-label" id="scoreTeamALabel">TEAM A</div>
-        <div class="score-display" id="scoreADisplay">0</div>
-        <div class="score-btns">
-          <button class="btn-score minus" onclick="adjustScore('A', -1)">−</button>
-          <button class="btn-score" onclick="adjustScore('A', 1)">+</button>
-        </div>
-      </div>
-      <div class="score-team team-b">
-        <div class="score-team-label" id="scoreTeamBLabel">TEAM B</div>
-        <div class="score-display" id="scoreBDisplay">0</div>
-        <div class="score-btns">
-          <button class="btn-score minus" onclick="adjustScore('B', -1)">−</button>
-          <button class="btn-score" onclick="adjustScore('B', 1)">+</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="sets-controls">
-      <div class="sets-team">
-        <span class="sets-label">Sets A</span>
-        <button class="btn-set minus" onclick="adjustSets('A', -1)">−</button>
-        <span class="sets-display" id="setsADisplay">0</span>
-        <button class="btn-set" onclick="adjustSets('A', 1)">+</button>
-      </div>
-      <div class="sets-team">
-        <span class="sets-label">Sets B</span>
-        <button class="btn-set minus" onclick="adjustSets('B', -1)">−</button>
-        <span class="sets-display" id="setsBDisplay">0</span>
-        <button class="btn-set" onclick="adjustSets('B', 1)">+</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SERVE -->
-  <div class="card">
-    <div class="card-title">
-      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-      Serve Indicator
-    </div>
-    <div class="serve-toggle-container">
-      <button class="serve-btn active" id="serveA" onclick="setServe('A')">
-        <span class="serve-icon"></span>Team A Serves
-      </button>
-      <button class="serve-switch-btn" onclick="switchServe()">⇄ Switch</button>
-      <button class="serve-btn" id="serveB" onclick="setServe('B')">
-        <span class="serve-icon"></span>Team B Serves
-      </button>
-    </div>
-  </div>
-
-  <!-- STREAM URL -->
-  <div class="card">
-    <div class="card-title">
-      <svg viewBox="0 0 24 24"><path d="M21 3H3c-1.11 0-2 .89-2 2v12c0 1.1.89 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.11-.9-2-2-2zm0 14H3V5h18v12zm-5-6l-7 4V7z"/></svg>
-      Stream URL
-    </div>
-    <div class="form-row single">
-      <div class="form-group">
-        <label>YouTube URL or Embed URL</label>
-        <input type="text" id="streamURLInput" placeholder="https://youtube.com/watch?v=... or embed URL">
-      </div>
-    </div>
-  </div>
-
-  <!-- SPONSORS -->
-  <div class="card">
-    <div class="card-title">
-      <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-      Sponsor Images
-    </div>
-    <div class="form-row single">
-      <div class="form-group">
-        <label>Sponsor 1 — Image URL</label>
-        <input type="text" id="sponsor1Input" placeholder="https://example.com/logo1.png">
-      </div>
-    </div>
-    <div class="form-row single">
-      <div class="form-group">
-        <label>Sponsor 2 — Image URL</label>
-        <input type="text" id="sponsor2Input" placeholder="https://example.com/logo2.png">
-      </div>
-    </div>
-    <div class="form-row single">
-      <div class="form-group">
-        <label>Sponsor 3 — Image URL</label>
-        <input type="text" id="sponsor3Input" placeholder="https://example.com/logo3.png">
-      </div>
-    </div>
-  </div>
-
-  <!-- RESET -->
-  <div class="reset-section">
-    <button class="btn-reset" onclick="resetScores()">Reset Scores</button>
-    <button class="btn-reset" onclick="resetAll()">Reset All</button>
-  </div>
+<!-- PAGE: STANDINGS -->
+<div class="page-section" id="page-standings">
+  <div class="page-title">LEAGUE STANDINGS</div>
+  <div class="page-subtitle">Beer Sheva Padel League</div>
+  <div class="group-tabs" id="standingsGroupTabs"></div>
+  <div class="glass-panel" id="standingsPanel"></div>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<!-- PAGE: SCHEDULE -->
+<div class="page-section" id="page-schedule">
+  <div class="page-title">SCHEDULE</div>
+  <div class="page-subtitle">Fixtures &amp; Results</div>
+  <div class="group-tabs" id="schedGroupTabs"></div>
+  <div class="fixture-tabs" id="fixtureTabs"></div>
+  <div class="glass-panel" id="schedulePanel"></div>
+</div>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="firebase-config.js"></script>
-
 <script>
-// ══════════════════════════════════
-// AUTH
-// ══════════════════════════════════
-let isAuthenticated = false;
+firebase.initializeApp(firebaseConfig);
+var db = firebase.database();
+var matchRef = db.ref('match');
+var standingsRef = db.ref('standings');
+var scheduleRef = db.ref('schedule');
 
-// Check saved auth
-if (sessionStorage.getItem('padel_admin_auth') === 'true') {
-  isAuthenticated = true;
-  document.getElementById('loginScreen').classList.add('hidden');
-  document.getElementById('adminDashboard').classList.add('visible');
+/* NAV */
+function showPage(page, el) {
+  document.querySelectorAll('.page-section').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  document.getElementById('page-' + page).classList.add('active');
+  el.classList.add('active');
 }
 
-function attemptLogin() {
-  const pw = document.getElementById('passwordInput').value;
-  if (pw === ADMIN_PASSWORD) {
-    isAuthenticated = true;
-    sessionStorage.setItem('padel_admin_auth', 'true');
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('adminDashboard').classList.add('visible');
-    initAdmin();
-  } else {
-    document.getElementById('loginError').style.display = 'block';
-    document.getElementById('passwordInput').value = '';
-    document.getElementById('passwordInput').focus();
+/* ========== STANDINGS ========== */
+var standingsGroupIdx = 0;
+function initStandingsTabs() {
+  var html = '';
+  ['A','B','C'].forEach(function(g, i) {
+    html += '<div class="group-tab' + (i===0?' active':'') + '" onclick="switchStandingsGroup(' + i + ', this)">' + 'Group ' + g + '</div>';
+  });
+  document.getElementById('standingsGroupTabs').innerHTML = html;
+}
+function switchStandingsGroup(idx, el) {
+  standingsGroupIdx = idx;
+  document.querySelectorAll('#standingsGroupTabs .group-tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  renderCurrentStandings();
+}
+var standingsCache = {};
+function renderCurrentStandings() {
+  var teams = standingsCache['group' + standingsGroupIdx];
+  teams = teams ? Object.values(teams) : [];
+  var c = document.getElementById('standingsPanel');
+  if (!teams.length) { c.innerHTML = '<div class="standings-empty">No teams registered yet</div>'; return; }
+  var sorted = teams.slice().sort(function(a,b) {
+    if ((b.wins||0) !== (a.wins||0)) return (b.wins||0) - (a.wins||0);
+    var sdA = (a.setsPlus||0)-(a.setsMinus||0), sdB = (b.setsPlus||0)-(b.setsMinus||0);
+    if (sdB !== sdA) return sdB - sdA;
+    return ((b.gamesPlus||0)-(b.gamesMinus||0)) - ((a.gamesPlus||0)-(a.gamesMinus||0));
+  });
+  var h = '<table class="standings-table"><thead><tr><th>#</th><th>PAIR</th><th class="col-p">P</th><th class="col-w">W</th><th>S+</th><th>S\u2212</th><th class="col-diff">SD</th><th>G+</th><th>G\u2212</th><th class="col-diff">GD</th></tr></thead><tbody>';
+  sorted.forEach(function(t, i) {
+    var sd = (t.setsPlus||0)-(t.setsMinus||0), gd = (t.gamesPlus||0)-(t.gamesMinus||0);
+    var sdC = sd>0?'positive':sd<0?'negative':'zero', gdC = gd>0?'positive':gd<0?'negative':'zero';
+    h += '<tr><td>'+(i+1)+'</td><td>'+(t.name||'\u2014')+'</td><td class="col-p">'+(t.played||0)+'</td><td class="col-w">'+(t.wins||0)+'</td><td class="col-plus">'+(t.setsPlus||0)+'</td><td class="col-minus">'+(t.setsMinus||0)+'</td><td class="col-diff '+sdC+'">'+(sd>0?'+'+sd:sd)+'</td><td class="col-plus">'+(t.gamesPlus||0)+'</td><td class="col-minus">'+(t.gamesMinus||0)+'</td><td class="col-diff '+gdC+'">'+(gd>0?'+'+gd:gd)+'</td></tr>';
+  });
+  h += '</tbody></table>';
+  c.innerHTML = h;
+}
+standingsRef.on('value', function(snap) {
+  standingsCache = snap.val() || {};
+  renderCurrentStandings();
+});
+initStandingsTabs();
+renderCurrentStandings();
+
+/* ========== SCHEDULE ========== */
+var schedGroupIdx = 0, schedFixtureIdx = 0;
+var scheduleCache = {};
+function initSchedGroupTabs() {
+  var html = '';
+  ['A','B','C'].forEach(function(g, i) {
+    html += '<div class="group-tab' + (i===0?' active':'') + '" onclick="switchSchedGroup(' + i + ', this)">Group ' + g + '</div>';
+  });
+  document.getElementById('schedGroupTabs').innerHTML = html;
+}
+function switchSchedGroup(idx, el) {
+  schedGroupIdx = idx; schedFixtureIdx = 0;
+  document.querySelectorAll('#schedGroupTabs .group-tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  renderFixtureTabs(); renderCurrentFixture();
+}
+function renderFixtureTabs() {
+  var html = '';
+  for (var f = 0; f < 7; f++) {
+    html += '<div class="fixture-tab' + (f===schedFixtureIdx?' active':'') + '" onclick="switchFixture(' + f + ', this)">Fixture ' + (f+1) + '</div>';
   }
+  document.getElementById('fixtureTabs').innerHTML = html;
 }
+function switchFixture(idx, el) {
+  schedFixtureIdx = idx;
+  document.querySelectorAll('.fixture-tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  renderCurrentFixture();
+}
+function renderCurrentFixture() {
+  var panel = document.getElementById('schedulePanel');
+  var groupKey = 'group' + schedGroupIdx;
+  var fixtureKey = 'fixture' + schedFixtureIdx;
+  var groupData = (scheduleCache[groupKey] || {})[fixtureKey];
+  if (!groupData) { panel.innerHTML = '<div class="fixture-empty">No fixtures scheduled yet</div>'; return; }
+  var matches = groupData.matches ? Object.values(groupData.matches) : [];
+  var gNames = ['A','B','C'];
+  var h = '<div class="fixture-group-label">GROUP ' + gNames[schedGroupIdx] + ' \u2014 FIXTURE ' + (schedFixtureIdx+1) + '</div>';
+  if (!matches.length) { h += '<div class="fixture-empty">No matches in this fixture</div>'; }
+  matches.forEach(function(m) {
+    var hasScore = m.scoreA !== undefined && m.scoreA !== '' && m.scoreB !== undefined && m.scoreB !== '';
+    var dateStr = '';
+    if (m.date) {
+      var parts = m.date.split('-');
+      if (parts.length === 3) {
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        dateStr = parseInt(parts[2]) + ' ' + months[parseInt(parts[1])-1] + ' ' + parts[0];
+      } else { dateStr = m.date; }
+    }
+    if (m.time) dateStr += (dateStr ? '  \u00B7  ' : '') + m.time;
+    h += '<div class="fixture-match">';
+    if (dateStr) h += '<div class="fm-datetime">' + dateStr + '</div>';
+    h += '<div class="fm-teams-row">';
+    h += '<div class="fm-team">' + (m.teamA || 'TBD') + '</div>';
+    h += '<div class="fm-score-box">';
+    if (hasScore) { h += '<span class="fm-score">' + m.scoreA + ' \u2013 ' + m.scoreB + '</span>'; }
+    else { h += '<span class="fm-score pending">vs</span>'; }
+    h += '</div>';
+    h += '<div class="fm-team away">' + (m.teamB || 'TBD') + '</div>';
+    h += '</div></div>';
+  });
+  panel.innerHTML = h;
+}
+scheduleRef.on('value', function(snap) {
+  scheduleCache = snap.val() || {};
+  renderCurrentFixture();
+});
+initSchedGroupTabs(); renderFixtureTabs(); renderCurrentFixture();
 
-document.getElementById('passwordInput').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') attemptLogin();
+/* ========== LIVE MATCH ========== */
+var prevScoreA = null, prevScoreB = null, currentStreamURL = '';
+function getYouTubeEmbedURL(url) {
+  if (!url) return '';
+  if (url.indexOf('/embed/') !== -1) return url;
+  var m = url.match(/youtu\.be\/([^?&]+)/);
+  if (m) return 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1&mute=1';
+  m = url.match(/[?&]v=([^?&]+)/);
+  if (m) return 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1&mute=1';
+  m = url.match(/youtube\.com\/live\/([^?&]+)/);
+  if (m) return 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1&mute=1';
+  return url;
+}
+function updateSponsor(id, url) {
+  var el = document.getElementById(id);
+  if (url && url.trim()) el.innerHTML = '<img src="'+url+'" alt="Sponsor" onerror="this.parentElement.innerHTML=\'<span class=\\\'empty-sponsor\\\'>Sponsor</span>\'">';
+  else el.innerHTML = '<span class="empty-sponsor">Sponsor</span>';
+}
+function updateStream(url) {
+  var eu = getYouTubeEmbedURL(url);
+  if (eu === currentStreamURL) return; currentStreamURL = eu;
+  var w = document.getElementById('videoWrapper'), p = document.getElementById('videoPlaceholder');
+  if (eu) { if (p) p.style.display='none'; var f=w.querySelector('iframe'); if(!f){f=document.createElement('iframe');f.allow='accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture';f.allowFullscreen=true;w.appendChild(f);} f.src=eu; }
+  else { var f=w.querySelector('iframe'); if(f)f.remove(); if(p)p.style.display='flex'; }
+}
+function pulseScore(el){ el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
+function renderSetHistory(sh) {
+  var sets=sh||[], hH='',hA='',hB='';
+  for(var i=0;i<sets.length;i++){ hH+='<div class="col-label set-history-label">S'+(i+1)+'</div>'; var s=sets[i],gA=s.gamesA||0,gB=s.gamesB||0;
+    hA+='<div class="set-history-cell '+(gA>gB?'set-won':'')+'"><span class="set-score">'+gA+(s.tiebreakA!=null?'<span class="tb-sup">'+s.tiebreakA+'</span>':'')+'</span></div>';
+    hB+='<div class="set-history-cell '+(gB>gA?'set-won':'')+'"><span class="set-score">'+gB+(s.tiebreakB!=null?'<span class="tb-sup">'+s.tiebreakB+'</span>':'')+'</span></div>'; }
+  document.getElementById('headerSetHistory').innerHTML=hH; document.getElementById('setHistoryA').innerHTML=hA; document.getElementById('setHistoryB').innerHTML=hB;
+}
+var prevPointsA=null,prevPointsB=null,PS=[0,15,30,40];
+function getPD(v,tb){if(tb)return v;if(v>=0&&v<PS.length)return PS[v];return'A';}
+/* Score delay: queue-based system — every score change is delayed individually.
+   If multiple changes happen during the delay window, each one is shown
+   in order after its own delay has elapsed. */
+var SCORE_DELAY = 15000;
+var scoreQueue = [];       /* Array of { data, showAt } */
+var scoreQueueInterval = null;
+var lastMatchData = null;
+var lastQueuedData = null;  /* Track what was last queued to detect changes */
+var isFirstLoad = true;
+
+/* Listen for delay setting changes */
+matchRef.child('scoreDelay').on('value', function(snap) {
+  var val = snap.val();
+  SCORE_DELAY = (val !== null && val !== undefined) ? val * 1000 : 15000;
 });
 
-// ══════════════════════════════════
-// FIREBASE INIT
-// ══════════════════════════════════
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const matchRef = db.ref('match');
-
-// Local state
-let matchData = {
-  teamA: '', teamB: '',
-  playersA: '', playersB: '',
-  scoreA: 0, scoreB: 0,
-  setsA: 0, setsB: 0,
-  serving: 'A',
-  streamURL: '',
-  sponsors: { s1: '', s2: '', s3: '' }
-};
-
-// ══════════════════════════════════
-// TOAST
-// ══════════════════════════════════
-let toastTimeout;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = '✓ ' + msg;
-  t.classList.add('show');
-  clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => t.classList.remove('show'), 2000);
+function applyScoreData(d) {
+  var sAEl=document.getElementById('scoreA'),sBEl=document.getElementById('scoreB'),nSA=d.scoreA||0,nSB=d.scoreB||0;
+  if(prevScoreA!==null&&prevScoreA!==nSA)pulseScore(sAEl); if(prevScoreB!==null&&prevScoreB!==nSB)pulseScore(sBEl);
+  sAEl.textContent=nSA; sBEl.textContent=nSB; prevScoreA=nSA; prevScoreB=nSB;
+  document.getElementById('setsA').textContent=d.setsA||0; document.getElementById('setsB').textContent=d.setsB||0;
+  var tb=d.isTiebreak||false,pAEl=document.getElementById('pointsA'),pBEl=document.getElementById('pointsB'),nPA=getPD(d.pointsA||0,tb),nPB=getPD(d.pointsB||0,tb);
+  if(prevPointsA!==null&&prevPointsA!==nPA)pulseScore(pAEl); if(prevPointsB!==null&&prevPointsB!==nPB)pulseScore(pBEl);
+  pAEl.textContent=nPA; pBEl.textContent=nPB; prevPointsA=nPA; prevPointsB=nPB;
+  renderSetHistory(d.setHistory?Object.values(d.setHistory):[]);
 }
 
-// ══════════════════════════════════
-// SYNC FROM FIREBASE → ADMIN UI
-// ══════════════════════════════════
-function syncUI(data) {
-  matchData = { ...matchData, ...data };
-
-  document.getElementById('teamAInput').value = data.teamA || '';
-  document.getElementById('teamBInput').value = data.teamB || '';
-  document.getElementById('playersAInput').value = data.playersA || '';
-  document.getElementById('playersBInput').value = data.playersB || '';
-  document.getElementById('streamURLInput').value = data.streamURL || '';
-
-  const sponsors = data.sponsors || {};
-  document.getElementById('sponsor1Input').value = sponsors.s1 || '';
-  document.getElementById('sponsor2Input').value = sponsors.s2 || '';
-  document.getElementById('sponsor3Input').value = sponsors.s3 || '';
-
-  updateScoreUI();
-  updateServeUI();
+function hasScoreChanged(oldD, newD) {
+  if (!oldD) return true;
+  return (oldD.scoreA||0)!==(newD.scoreA||0) || (oldD.scoreB||0)!==(newD.scoreB||0) ||
+    (oldD.setsA||0)!==(newD.setsA||0) || (oldD.setsB||0)!==(newD.setsB||0) ||
+    (oldD.pointsA||0)!==(newD.pointsA||0) || (oldD.pointsB||0)!==(newD.pointsB||0) ||
+    (oldD.isTiebreak||false)!==(newD.isTiebreak||false) ||
+    JSON.stringify(oldD.setHistory||{})!==JSON.stringify(newD.setHistory||{});
 }
 
-function updateScoreUI() {
-  document.getElementById('scoreADisplay').textContent = matchData.scoreA;
-  document.getElementById('scoreBDisplay').textContent = matchData.scoreB;
-  document.getElementById('setsADisplay').textContent = matchData.setsA;
-  document.getElementById('setsBDisplay').textContent = matchData.setsB;
-  document.getElementById('scoreTeamALabel').textContent = matchData.teamA || 'TEAM A';
-  document.getElementById('scoreTeamBLabel').textContent = matchData.teamB || 'TEAM B';
-}
-
-function updateServeUI() {
-  const serveA = document.getElementById('serveA');
-  const serveB = document.getElementById('serveB');
-  serveA.classList.toggle('active', matchData.serving === 'A');
-  serveB.classList.toggle('active', matchData.serving === 'B');
-}
-
-// ══════════════════════════════════
-// WRITE TO FIREBASE
-// ══════════════════════════════════
-function pushData(updates, msg) {
-  matchRef.update(updates).then(() => {
-    Object.assign(matchData, updates);
-    updateScoreUI();
-    updateServeUI();
-    if (msg) showToast(msg);
-  });
-}
-
-// Score
-function adjustScore(team, delta) {
-  const key = team === 'A' ? 'scoreA' : 'scoreB';
-  const newVal = Math.max(0, (matchData[key] || 0) + delta);
-  pushData({ [key]: newVal }, `Score ${team}: ${newVal}`);
-}
-
-// Sets
-function adjustSets(team, delta) {
-  const key = team === 'A' ? 'setsA' : 'setsB';
-  const newVal = Math.max(0, (matchData[key] || 0) + delta);
-  pushData({ [key]: newVal }, `Sets ${team}: ${newVal}`);
-}
-
-// Serve
-function setServe(team) {
-  pushData({ serving: team }, `Serve → Team ${team}`);
-}
-
-function switchServe() {
-  const newServe = matchData.serving === 'A' ? 'B' : 'A';
-  pushData({ serving: newServe }, `Serve → Team ${newServe}`);
-}
-
-// Resets
-function resetScores() {
-  if (!confirm('Reset scores and sets to 0?')) return;
-  pushData({ scoreA: 0, scoreB: 0, setsA: 0, setsB: 0 }, 'Scores reset');
-}
-
-function resetAll() {
-  if (!confirm('Reset EVERYTHING? Teams, scores, stream, sponsors?')) return;
-  matchRef.set({
-    teamA: '', teamB: '',
-    playersA: '', playersB: '',
-    scoreA: 0, scoreB: 0,
-    setsA: 0, setsB: 0,
-    serving: 'A',
-    streamURL: '',
-    sponsors: { s1: '', s2: '', s3: '' }
-  }).then(() => {
-    matchData = { teamA: '', teamB: '', playersA: '', playersB: '', scoreA: 0, scoreB: 0, setsA: 0, setsB: 0, serving: 'A', streamURL: '', sponsors: { s1: '', s2: '', s3: '' } };
-    syncUI(matchData);
-    showToast('All data reset');
-  });
-}
-
-// ══════════════════════════════════
-// TEXT INPUT DEBOUNCED SYNC
-// ══════════════════════════════════
-function debounce(fn, ms) {
-  let t;
-  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
-}
-
-const syncText = debounce((key, val) => {
-  if (key.startsWith('sponsors.')) {
-    pushData({ [key]: val });
-  } else {
-    pushData({ [key]: val });
+/* Process the queue: apply any items whose delay time has passed */
+function processScoreQueue() {
+  var now = Date.now();
+  while (scoreQueue.length > 0 && scoreQueue[0].showAt <= now) {
+    var item = scoreQueue.shift();
+    applyScoreData(item.data);
+    lastMatchData = item.data;
   }
-}, 400);
-
-function bindTextInput(elId, key) {
-  document.getElementById(elId).addEventListener('input', (e) => {
-    syncText(key, e.target.value);
-  });
+  /* Stop the interval if queue is empty to save resources */
+  if (scoreQueue.length === 0 && scoreQueueInterval) {
+    clearInterval(scoreQueueInterval);
+    scoreQueueInterval = null;
+  }
 }
 
-// ══════════════════════════════════
-// INIT
-// ══════════════════════════════════
-function initAdmin() {
-  // Listen for data
-  matchRef.on('value', (snap) => {
-    const data = snap.val();
-    if (data) syncUI(data);
-  });
-
-  // Bind text inputs
-  bindTextInput('teamAInput', 'teamA');
-  bindTextInput('teamBInput', 'teamB');
-  bindTextInput('playersAInput', 'playersA');
-  bindTextInput('playersBInput', 'playersB');
-  bindTextInput('streamURLInput', 'streamURL');
-  bindTextInput('sponsor1Input', 'sponsors/s1');
-  bindTextInput('sponsor2Input', 'sponsors/s2');
-  bindTextInput('sponsor3Input', 'sponsors/s3');
+/* Start the queue processor if not already running */
+function ensureQueueProcessor() {
+  if (!scoreQueueInterval) {
+    scoreQueueInterval = setInterval(processScoreQueue, 200);
+  }
 }
 
-// Auto-init if already authed
-if (isAuthenticated) initAdmin();
+matchRef.on('value', function(snap) {
+  var d=snap.val(); if(!d)return;
+  document.getElementById('loadingOverlay').classList.add('hidden');
+
+  /* Instant updates: names, serve, stream, sponsors */
+  document.getElementById('teamAName').textContent=d.teamA||'TEAM A'; document.getElementById('teamBName').textContent=d.teamB||'TEAM B';
+  document.getElementById('playersA').textContent=d.playersA||'\u2014'; document.getElementById('playersB').textContent=d.playersB||'\u2014';
+  document.getElementById('rowA').classList.toggle('serving',d.serving==='A'); document.getElementById('rowB').classList.toggle('serving',d.serving==='B');
+  updateStream(d.streamURL||'');
+  var sp=d.sponsors||{}; updateSponsor('sponsor1',sp.s1); updateSponsor('sponsor2',sp.s2); updateSponsor('sponsor3',sp.s3);
+
+  /* Delayed updates: scores, sets, points, set history */
+  if (isFirstLoad) {
+    isFirstLoad = false;
+    applyScoreData(d);
+    lastMatchData = d;
+    lastQueuedData = d;
+    return;
+  }
+
+  if (hasScoreChanged(lastQueuedData, d)) {
+    lastQueuedData = d;
+    if (SCORE_DELAY === 0) {
+      applyScoreData(d);
+      lastMatchData = d;
+      scoreQueue = [];
+    } else {
+      scoreQueue.push({ data: d, showAt: Date.now() + SCORE_DELAY });
+      ensureQueueProcessor();
+    }
+  }
+});
+setTimeout(function(){document.getElementById('loadingOverlay').classList.add('hidden');},5000);
 </script>
 </body>
 </html>
+
